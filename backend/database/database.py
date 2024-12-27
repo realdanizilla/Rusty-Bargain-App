@@ -24,11 +24,11 @@ DATABASE_URL = (
 
 # Creating the engine and session
 engine = create_engine(DATABASE_URL)
-Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # funcion to get database session
 def get_db():
-    db = Session()
+    db = SessionLocal()
     try:
         yield db
     finally:
