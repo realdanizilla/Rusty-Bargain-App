@@ -45,7 +45,7 @@ class VehicleBase(BaseModel):
     registrationyear: int
     fueltype: str
     brand: str
-    repaired: bool
+    notrepaired: str
     datecreated: datetime
     numberofpictures: int
     postalcode: int

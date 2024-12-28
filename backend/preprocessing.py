@@ -10,7 +10,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import MaxAbsScaler
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
-from database.database import engine
+#from database.database import engine
 
 
 # Pipeline functions
@@ -185,11 +185,11 @@ pipeline_single = Pipeline(steps=[('custom_transformer', CustomTransformerSingle
 #loaded_pipeline = joblib.load('preprocessing_pipeline.pkl')
 
 if __name__ == "__main__":
-    query = 'SELECT * FROM car_data'
-    data_df = pd.read_sql(query,engine)
+    # query = 'SELECT * FROM car_data'
+    # data_df = pd.read_sql(query,engine)
     #data = pd.read_csv('../data/car_data.csv')
-    processed_df = pipeline_dataset.fit_transform(data_df)
-    processed_df.to_csv('../data/processed_data.csv', index=False)
+    # processed_df = pipeline_dataset.fit_transform(data_df)
+    # processed_df.to_csv('../data/processed_data.csv', index=False)
     
     # sample data for testing
     data_single = {

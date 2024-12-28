@@ -11,9 +11,14 @@ from crud.controller import (
     update_vehicle,
     delete_vehicle
 )
-from ELT import load_model, train_model_and_create_file
+from ELT import load_model, train_model_and_create_file, preprocess_data
 
 router = APIRouter()
+
+# root endpoint
+@router.get("/")
+def read_root():
+    return {"message": "Welcome to the Car Price Prediction API"}
 
 # CRUD operations for the vehicle table
 ## Create a new vehicle
@@ -55,16 +60,24 @@ def delete_vehicle_endpoint(vehicle_id: int, db: Session = Depends(get_db)):
     return db_vehicle
 
 
-# Model training endpoints
+# ML endpoints
+## Preprocess raw data
+@router.get("/preprocessdata/")
+def preprocess_data_endpoint():
+    preprocess_data()
+    return {'Message': 'Data preprocessed'}
+
 ## Train the model
 @router.get("/trainmodel/")
 def train_model_endpoint():
     train_model_and_create_file()
+    return {'Message': 'Model trained'}
 
 ## Load the model
 @router.get("/loadmodel/")
 def load_model_endpoint():
-    return load_model()
+    load_model()
+    return {'Message': 'Model loaded'}
 
 
 ## Predict the price

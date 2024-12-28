@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pandas
+pydantic
+logfire
+python-dotenv
+scikit-learn
+numpy
+SQLAlchemy

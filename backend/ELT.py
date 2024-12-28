@@ -14,12 +14,12 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from logging import basicConfig, getLogger
-from database.database import Base, VehicleDatabase, Session, engine
+from database.database import engine
 from catboost import CatBoostRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_squared_error
 from crud.schemas import InputData
-from preprocessing import pipeline
+from preprocessing import pipeline_dataset
 from typing import List, Dict
 from fastapi import HTTPException
 
@@ -38,16 +38,16 @@ logfire.instrument_sqlalchemy()
 
 
 def preprocess_data()-> pd.DataFrame:
-    query = 'SELECT * FROM car_data'
+    query = 'SELECT * FROM bronze_car_data'
     data_df = pd.read_sql(query,engine)
-    processed_df = pipeline.fit_transform(df)
-    return processed_df
+    processed_df = pipeline_dataset.fit_transform(data_df)
     logger.info("Raw data preprocessed")
+    return processed_df
     
-## creates the table on the database
-def create_table():
-    Base.metadata.create_all(engine)
-    logger.info("gold_car_data Table succesfully created!")
+## creates the table on the database (not needed?)
+# def create_table():
+#     Base.metadata.create_all(engine)
+#     logger.info("gold_car_data Table succesfully created!")
 
 ## loads the preprocessed dataset into the database table
 def load_preprocessed_vehicle_dataset_into_database(df: pd.DataFrame):
@@ -55,7 +55,7 @@ def load_preprocessed_vehicle_dataset_into_database(df: pd.DataFrame):
     logger.info("Preprocessed data loaded into gold_car_data table!")
 
 ## trains the model and creates a pkl file
-def train_model_and_create_file(dataset):
+def train_model_and_create_file()-> pd.DataFrame:
     try:
         training_query = 'SELECT * FROM gold_car_data'
         data = pd.read_sql(training_query,engine)
@@ -77,7 +77,6 @@ def train_model_and_create_file(dataset):
 def load_model():
     global model
     model = joblib.load("model.pkl")
-    return {"Message": "Model loaded"}
 
 ## creates a prediction for the price
 def predict_price(data:List[InputData])-> Dict[str, List]:

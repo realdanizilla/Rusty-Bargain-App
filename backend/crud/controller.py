@@ -1,8 +1,8 @@
 # this file is a controller for the CRUD operations of the database
 
 from sqlalchemy.orm import Session
-from schemas import VehicleCreate, VehicleUpdate
-from models import VehicleModel
+from crud.schemas import VehicleCreate, VehicleUpdate
+from crud.models import VehicleModel
 
 
 # Create function

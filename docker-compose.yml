@@ -1,0 +1,75 @@
+version: '1'
+services:
+  postgres:
+    container_name: db
+    image: postgres:latest
+    volumes:
+      - postgresql_bin:/usr/lib/postgresql
+      - postgresql_data:/var/lib/postgresql/data
+      - ./raw_car_data.sql:/docker-entrypoint-initdb.d/raw_car_data.sql # changed to raw car_data 
+      - ./files:/files
+    ports:
+      - 55432:5432
+    environment:
+      POSTGRES_DB: rusty_bargain
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    networks:
+      - mynetwork
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: postgres
+      PGADMIN_LISTEN_PORT: 5050
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - postgresql_bin:/usr/lib/postgresql
+      - pgadmin_root_prefs:/root/.pgadmin
+      - pgadmin_working_dir:/var/lib/pgadmin
+      - ./files:/files
+    ports:
+      - 5050:5050
+    networks:
+      - mynetwork
+
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend:/app
+    environment:
+      DATABASE_URL: postgresql://user:password@0.0.0.0:5432/rusty_bargain
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    networks:
+      - mynetwork
+
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "8501:8501"
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+
+volumes:
+  pgadmin_root_prefs:
+    driver: local
+  pgadmin_working_dir:
+    driver: local
+  postgresql_data:
+    driver: local
+  postgresql_bin:
+    driver: local

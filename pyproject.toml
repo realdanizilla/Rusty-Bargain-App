@@ -16,10 +16,13 @@ logfire = "^2.11.0"
 python-dotenv = "^1.0.1"
 uvicorn = "^0.34.0"
 scikit-learn = "^1.6.0"
-numpy = "^2.2.1"
 apache-airflow = "^2.10.4"
 sqlalchemy = "1.4.36"
 astro = "^0.2.7"
+psycopg2 = "^2.9.10"
+catboost = "^1.2.7"
+opentelemetry-instrumentation-requests = "^0.50b0"
+opentelemetry-instrumentation-sqlalchemy = "^0.50b0"
 
 
 [build-system]
