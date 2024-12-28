@@ -1,10 +1,10 @@
 from sqlalchemy import Column, Float, String, Integer, DateTime, Bool
 from database.database import Base
 
-# This file contains the models (tables) for the database
+# This file contains the table models for the database
 
 class VehicleModel(Base):
-    __tablename__ = "vehicles"
+    __tablename__ = "vehicles_bronze"
     id = Column(Integer, primary_key=True, auto_increment=True)
     datecrawled = (Column(DateTime))
     price = Column(Float, nullable=False)
