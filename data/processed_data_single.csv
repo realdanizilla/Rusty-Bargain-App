@@ -1,0 +1,2 @@
+price,registrationyear,power,registrationmonth,numberofpictures,postalcode,mileage_censored,gearbox_manual,fueltype_petrol,notrepaired_unknown,vehicletype_unknown,brand_encoded,model_encoded
+480,0.896939693969397,0.0,0.0,0.0,0.7043640872817456,1.0,1,1,1,1,38,116

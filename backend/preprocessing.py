@@ -4,11 +4,15 @@
 
 import pandas as pd
 import numpy as np
-#import joblib
+import joblib
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import MaxAbsScaler
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
+
+def column_name_cleaning(df: pd.DataFrame):
+    df.columns = df.columns.str.lower()
+    return df
 
 def handling_date_formats(df: pd.DataFrame):
     df['datecrawled'] = pd.to_datetime(df['datecrawled'],format='%d/%m/%Y %H:%M')
@@ -61,26 +65,90 @@ def handling_categoricals_ohe(df: pd.DataFrame):
     df = pd.get_dummies(df, columns=['gearbox', 'fueltype', 'notrepaired', 'vehicletype'],dtype=int)
     return df
 
-def handling_categoricals_label(df: pd.DataFrame):    
+# def handling_categoricals_label(df: pd.DataFrame):    
+#     categorical_cols = ['brand', 'model']
+#     le = LabelEncoder()
+#     for col in categorical_cols:
+#         df[f"{col}_encoded"] = le.fit_transform(df[col])
+#     joblib.dump(le, 'label_encoder.pkl')
+#     df.drop(columns=['model', 'brand'], inplace=True)
+#     return df
+
+def handling_categoricals_label(df: pd.DataFrame, fit: bool = False) -> pd.DataFrame:
+    """
+    Fit the label encoder on the categorical columns if fit is True,
+    otherwise transform the DataFrame using the fitted label encoder.
+    
+    Parameters:
+    df (pd.DataFrame): The DataFrame containing the categorical columns to encode.
+    fit (bool): If True, fit the label encoder; if False, transform the DataFrame.
+    
+    Returns:
+    pd.DataFrame: The DataFrame with encoded columns and original columns dropped.
+    """
     categorical_cols = ['brand', 'model']
-    le = LabelEncoder()
-    for col in categorical_cols:
-        df[f"{col}_encoded"] = le.fit_transform(df[col])
-    df.drop(columns=['model', 'brand'], inplace=True)
+    
+    if fit:
+        # Fit the label encoder and save it
+        le = LabelEncoder()
+        for col in categorical_cols:
+            df[f"{col}_encoded"] = le.fit_transform(df[col])
+            joblib.dump(le, f'label_encoder_{col}.pkl')
+    else:
+        # Apply label encoding to the categorical columns
+        for col in categorical_cols:
+            # Load the fitted label encoder
+            le = joblib.load(f'label_encoder_{col}.pkl')
+            if col in df.columns:
+                df[f"{col}_encoded"] = le.transform(df[col])
+    
+    # Drop the original categorical columns
+    df.drop(columns=categorical_cols, inplace=True, errors='ignore')
+    
     return df
 
-def scaling_numericals(df: pd.DataFrame):
+
+# def handling_categoricals_label_single(df: pd.DataFrame, le=None):    
+#     categorical_cols = ['brand', 'model']
+#     if le is None:
+#         le = joblib.load('label_encoder.pkl')
+#     for col in categorical_cols:
+#         df[f"{col}_encoded"] = le.fit_transform(df[col])
+#     df.drop(columns=['model', 'brand'], inplace=True)
+#     return df    
+
+def scaling_numericals(df: pd.DataFrame, fit: bool = False):
     numeric = ['registrationyear', 'power', 'mileage_censored', 'registrationmonth',  'numberofpictures', 'postalcode']
-    scaler = MaxAbsScaler()
-    scaler.fit(df[numeric])
-    df[numeric] = scaler.transform(df[numeric])
+    if fit:
+        scaler = MaxAbsScaler()
+        scaler.fit(df[numeric])
+        joblib.dump(scaler, 'scaler.pkl')
+        df[numeric] = scaler.transform(df[numeric])
+    else:
+        scaler = joblib.load('scaler.pkl')
+        df[numeric] = scaler.transform(df[numeric])
     return df
+
+# def scaling_numericals(df: pd.DataFrame):
+#     numeric = ['registrationyear', 'power', 'mileage_censored', 'registrationmonth',  'numberofpictures', 'postalcode']
+#     scaler = MaxAbsScaler()
+#     scaler.fit(df[numeric])
+#     joblib.dump(scaler, 'scaler.pkl')
+#     df[numeric] = scaler.transform(df[numeric])
+#     return df
+
+# def scaling_numericals_single(df: pd.DataFrame, scaler=None):
+#     numeric = ['registrationyear', 'power', 'mileage_censored', 'registrationmonth',  'numberofpictures', 'postalcode']
+#     if scaler is None:
+#         scaler = joblib.load('scaler.pkl')
+#     df[numeric] = scaler.transform(df[numeric])
+#     return df
 
 def dropping_unnecessary_columns(df: pd.DataFrame):
     df.drop(columns=['datecrawled', 'mileage', 'datecreated', 'lastseen'], inplace=True)
     return df
     
-class CustomTransformer(BaseEstimator, TransformerMixin):
+class CustomTransformerDataset(BaseEstimator, TransformerMixin):
     def __init__(self):
         pass
 
@@ -88,17 +156,54 @@ class CustomTransformer(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X):
+        X = column_name_cleaning(X)
         X = handling_date_formats(X)
         X = handling_missing_values(X)
         X = handling_outliers_mileage(X)
         X = handling_outliers_power_registrationyear(X)
         X = handling_categoricals_ohe(X)
-        X = handling_categoricals_label(X)
-        X = scaling_numericals(X)
+        X = handling_categoricals_label(X, True)
+        X = scaling_numericals(X, True)
         X = dropping_unnecessary_columns(X)
         return X
 
-pipeline = Pipeline(steps=[('custom_transformer', CustomTransformer())])
+class CustomTransformerSingle(BaseEstimator, TransformerMixin):
+    def __init__(self):
+        self.le = None
+        self.scaler = None
+
+    def fit(self, X, y=None):
+        return self
+    
+    # def load_label_encoder_brand(self):
+    #     self.le = joblib.load('label_encoder_brand.pkl')
+    #     return self.le
+
+    # def load_scaler(self):
+    #     self.scaler = joblib.load('scaler.pkl')
+    #     return self.scaler
+
+    def transform(self, X):
+        # if self.le is None:
+        #     self.load_label_encoder()
+        # if self.scaler is None:
+        #     self.load_scaler()
+
+        X = column_name_cleaning(X)
+        X = handling_date_formats(X)
+        X = handling_missing_values(X)
+        X = handling_outliers_mileage(X)
+        X = handling_outliers_power_registrationyear(X)
+        X = handling_categoricals_ohe(X)
+        X = handling_categoricals_label(X, False)
+        X = scaling_numericals(X, False)
+        X = dropping_unnecessary_columns(X)
+        return X
+
+pipeline_dataset = Pipeline(steps=[('custom_transformer', CustomTransformerDataset())])
+
+pipeline_single = Pipeline(steps=[('custom_transformer', CustomTransformerSingle())])
+
 
 
 # Save the pipeline
@@ -108,7 +213,12 @@ pipeline = Pipeline(steps=[('custom_transformer', CustomTransformer())])
 #loaded_pipeline = joblib.load('preprocessing_pipeline.pkl')
 
 if __name__ == "__main__":
-    data = {
+
+    data = pd.read_csv('../data/car_data.csv')
+    processed_df = pipeline_dataset.fit_transform(data)
+    processed_df.to_csv('../data/processed_data.csv', index=False)
+    
+    data_single = {
     'DateCrawled': ['24/03/2016 11:52'],
     'Price': [480],
     'VehicleType': [None],  # Assuming empty value is represented as None
@@ -126,14 +236,12 @@ if __name__ == "__main__":
     'PostalCode': [70435],
     'LastSeen': ['07/04/2016 03:16']
 }
-
+    
     # Create the DataFrame
-    df_single_row = pd.DataFrame(data)
+    df_single_row = pd.DataFrame(data_single)
     df_single_row.columns = df_single_row.columns.str.lower()
-
-    processed_df = pipeline.fit_transform(df_single_row)
-    pd.set_option('display.max_columns', None)
-    print(processed_df)
+    processed_df_single = pipeline_single.fit_transform(df_single_row)
+    processed_df_single.to_csv('../data/processed_data_single.csv', index=False)
 
     # issues
     # 1. scaler is not scaling the single value for prediction
