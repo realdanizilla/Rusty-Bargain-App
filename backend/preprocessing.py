@@ -65,15 +65,6 @@ def handling_categoricals_ohe(df: pd.DataFrame):
     df = pd.get_dummies(df, columns=['gearbox', 'fueltype', 'notrepaired', 'vehicletype'],dtype=int)
     return df
 
-# def handling_categoricals_label(df: pd.DataFrame):    
-#     categorical_cols = ['brand', 'model']
-#     le = LabelEncoder()
-#     for col in categorical_cols:
-#         df[f"{col}_encoded"] = le.fit_transform(df[col])
-#     joblib.dump(le, 'label_encoder.pkl')
-#     df.drop(columns=['model', 'brand'], inplace=True)
-#     return df
-
 def handling_categoricals_label(df: pd.DataFrame, fit: bool = False) -> pd.DataFrame:
     """
     Fit the label encoder on the categorical columns if fit is True,
@@ -105,17 +96,7 @@ def handling_categoricals_label(df: pd.DataFrame, fit: bool = False) -> pd.DataF
     # Drop the original categorical columns
     df.drop(columns=categorical_cols, inplace=True, errors='ignore')
     
-    return df
-
-
-# def handling_categoricals_label_single(df: pd.DataFrame, le=None):    
-#     categorical_cols = ['brand', 'model']
-#     if le is None:
-#         le = joblib.load('label_encoder.pkl')
-#     for col in categorical_cols:
-#         df[f"{col}_encoded"] = le.fit_transform(df[col])
-#     df.drop(columns=['model', 'brand'], inplace=True)
-#     return df    
+    return df  
 
 def scaling_numericals(df: pd.DataFrame, fit: bool = False):
     numeric = ['registrationyear', 'power', 'mileage_censored', 'registrationmonth',  'numberofpictures', 'postalcode']
@@ -128,21 +109,6 @@ def scaling_numericals(df: pd.DataFrame, fit: bool = False):
         scaler = joblib.load('scaler.pkl')
         df[numeric] = scaler.transform(df[numeric])
     return df
-
-# def scaling_numericals(df: pd.DataFrame):
-#     numeric = ['registrationyear', 'power', 'mileage_censored', 'registrationmonth',  'numberofpictures', 'postalcode']
-#     scaler = MaxAbsScaler()
-#     scaler.fit(df[numeric])
-#     joblib.dump(scaler, 'scaler.pkl')
-#     df[numeric] = scaler.transform(df[numeric])
-#     return df
-
-# def scaling_numericals_single(df: pd.DataFrame, scaler=None):
-#     numeric = ['registrationyear', 'power', 'mileage_censored', 'registrationmonth',  'numberofpictures', 'postalcode']
-#     if scaler is None:
-#         scaler = joblib.load('scaler.pkl')
-#     df[numeric] = scaler.transform(df[numeric])
-#     return df
 
 def dropping_unnecessary_columns(df: pd.DataFrame):
     df.drop(columns=['datecrawled', 'mileage', 'datecreated', 'lastseen'], inplace=True)
@@ -246,4 +212,4 @@ if __name__ == "__main__":
     # issues
     # 1. scaler is not scaling the single value for prediction
     # 2. categorical variables not handled correctly for single value
-     
+    
