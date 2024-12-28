@@ -2,9 +2,9 @@ from sqlalchemy import Column, Float, String, Integer, DateTime, Bool
 from database.database import Base
 
 # This file contains the table models for the database
-
+# Need to review data types based on what is on the preprocessed data
 class VehicleModel(Base):
-    __tablename__ = "vehicles_bronze"
+    __tablename__ = "gold_car_data"
     id = Column(Integer, primary_key=True, auto_increment=True)
     datecrawled = (Column(DateTime))
     price = Column(Float, nullable=False)

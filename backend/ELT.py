@@ -36,32 +36,41 @@ logfire.instrument_sqlalchemy()
 # Functions below are used to start from raw data and end with a trained model file
 ## loads the initial dataset into a dataframe and preprocess it
 
-filepath = 'data/car_data.csv'
 
-def preprocess_data(df: pd.DataFrame)-> pd.DataFrame:
+def preprocess_data()-> pd.DataFrame:
+    query = 'SELECT * FROM car_data'
+    data_df = pd.read_sql(query,engine)
     processed_df = pipeline.fit_transform(df)
     return processed_df
+    logger.info("Raw data preprocessed")
     
 ## creates the table on the database
 def create_table():
     Base.metadata.create_all(engine)
-    logger.info("Table succesfully created!")
+    logger.info("gold_car_data Table succesfully created!")
 
 ## loads the preprocessed dataset into the database table
-def load_preprocessed_vehicle_dataset_into_database(path):
-    pass
+def load_preprocessed_vehicle_dataset_into_database(df: pd.DataFrame):
+    df.to_sql('gold_car_data', con=engine, if_exists='replace', index=False)
+    logger.info("Preprocessed data loaded into gold_car_data table!")
 
 ## trains the model and creates a pkl file
 def train_model_and_create_file(dataset):
-    data = dataset
-    X = data.drop(columns=["price"])
-    y = data["price"]
-    X_train,  X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
-    model = CatBoostRegressor(depth=7, iterations=50, l2_leaf_reg=0.1, learning_rate=0.5)
-    model.fit(X_train, y_train)
-    prediction = model.predict(X_test)
-    mse = np.sqrt(mean_squared_error(y_test, prediction))
-    joblib.dump(model, "model.pkl")
+    try:
+        training_query = 'SELECT * FROM gold_car_data'
+        data = pd.read_sql(training_query,engine)
+        X = data.drop(columns=["price"])
+        y = data["price"]
+        X_train,  X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
+        model = CatBoostRegressor(depth=7, iterations=50, l2_leaf_reg=0.1, learning_rate=0.5)
+        model.fit(X_train, y_train)
+        prediction = model.predict(X_test)
+        mse = np.sqrt(mean_squared_error(y_test, prediction))
+        joblib.dump(model, "model.pkl")
+        logger.info("Model trained and model.pkl file created!")
+    except Exception as e:
+        HTTPException(status_code=500, detail=str(e))
+        logger.info("Model could not be trained, error: {e}")
 
 
 ## loads the model from the pkl file

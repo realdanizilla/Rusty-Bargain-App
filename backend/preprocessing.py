@@ -1,6 +1,7 @@
-# This file is used to preprocess raw vehicle data into a format that can be used for training a machine learning model. 
+# This file is used to preprocess raw vehicle data from postgres database into a 
+# format that can be used for training a machine learning model. 
 # The functions in this file are used to preprocess the data 
-# pipeline can be saved (currently inactivated)
+# data pipeline can be saved (currently inactivated)
 
 import pandas as pd
 import numpy as np
@@ -9,7 +10,10 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import MaxAbsScaler
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
+from database.database import engine
 
+
+# Pipeline functions
 def column_name_cleaning(df: pd.DataFrame):
     df.columns = df.columns.str.lower()
     return df
@@ -113,7 +117,8 @@ def scaling_numericals(df: pd.DataFrame, fit: bool = False):
 def dropping_unnecessary_columns(df: pd.DataFrame):
     df.drop(columns=['datecrawled', 'mileage', 'datecreated', 'lastseen'], inplace=True)
     return df
-    
+
+# transformer class for the entire dataset
 class CustomTransformerDataset(BaseEstimator, TransformerMixin):
     def __init__(self):
         pass
@@ -133,6 +138,7 @@ class CustomTransformerDataset(BaseEstimator, TransformerMixin):
         X = dropping_unnecessary_columns(X)
         return X
 
+# transformer class for a single record
 class CustomTransformerSingle(BaseEstimator, TransformerMixin):
     def __init__(self):
         self.le = None
@@ -179,11 +185,13 @@ pipeline_single = Pipeline(steps=[('custom_transformer', CustomTransformerSingle
 #loaded_pipeline = joblib.load('preprocessing_pipeline.pkl')
 
 if __name__ == "__main__":
-
-    data = pd.read_csv('../data/car_data.csv')
-    processed_df = pipeline_dataset.fit_transform(data)
+    query = 'SELECT * FROM car_data'
+    data_df = pd.read_sql(query,engine)
+    #data = pd.read_csv('../data/car_data.csv')
+    processed_df = pipeline_dataset.fit_transform(data_df)
     processed_df.to_csv('../data/processed_data.csv', index=False)
     
+    # sample data for testing
     data_single = {
     'DateCrawled': ['24/03/2016 11:52'],
     'Price': [480],
@@ -203,13 +211,8 @@ if __name__ == "__main__":
     'LastSeen': ['07/04/2016 03:16']
 }
     
-    # Create the DataFrame
+    # Create the DataFrame for single record
     df_single_row = pd.DataFrame(data_single)
     df_single_row.columns = df_single_row.columns.str.lower()
     processed_df_single = pipeline_single.fit_transform(df_single_row)
     processed_df_single.to_csv('../data/processed_data_single.csv', index=False)
-
-    # issues
-    # 1. scaler is not scaling the single value for prediction
-    # 2. categorical variables not handled correctly for single value
-    
