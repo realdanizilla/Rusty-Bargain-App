@@ -42,7 +42,7 @@ services:
     volumes:
       - ./backend:/app
     environment:
-      DATABASE_URL: postgresql://user:password@0.0.0.0:5432/rusty_bargain
+      DATABASE_URL: postgresql://user:password@postgres/rusty_bargain
     ports:
       - "8000:8000"
     depends_on:
