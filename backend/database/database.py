@@ -17,14 +17,19 @@ POSTGRES_PORT = os.getenv("POSTGRES_PORT")
 POSTGRES_DB = os.getenv("POSTGRES_DB")
 
 # Database URL setup
-DATABASE_URL = (
-    f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}"
-    f"@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
-)
+#DATABASE_URL = (
+#    f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}"
+#    f"@{POSTGRES_HOST}/{POSTGRES_DB}"
+#)
+DATABASE_URL = 'postgresql://user:password@postgres/rusty_bargain'
 
+print(DATABASE_URL)
 # Creating the engine and session
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Creating the declarative base class for the database
+Base = declarative_base()
 
 # funcion to get database session
 def get_db():
@@ -34,8 +39,7 @@ def get_db():
     finally:
         db.close()
 
-# Creating the declarative base class for the database
-Base = declarative_base()
+
 
 
 

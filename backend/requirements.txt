@@ -7,3 +7,9 @@ python-dotenv
 scikit-learn
 numpy
 SQLAlchemy
+psycopg2-binary
+psycopg2
+catboost
+opentelemetry-instrumentation-requests
+opentelemetry-instrumentation-sqlalchemy
+dotenv

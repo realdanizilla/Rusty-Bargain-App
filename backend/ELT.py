@@ -70,7 +70,7 @@ def train_model_and_create_file()-> pd.DataFrame:
         logger.info("Model trained and model.pkl file created!")
     except Exception as e:
         HTTPException(status_code=500, detail=str(e))
-        logger.info("Model could not be trained, error: {e}")
+        logger.error("Model could not be trained, error: {e}")
 
 
 ## loads the model from the pkl file
