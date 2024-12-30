@@ -11,7 +11,13 @@ from crud.controller import (
     update_vehicle,
     delete_vehicle
 )
-from ELT import load_model, train_model_and_create_file, preprocess_data
+from ELT import (
+    load_model,
+    train_model_and_create_file,
+    preprocess_data,
+    load_preprocessed_vehicle_dataset_into_database,
+    predict_price
+)
 
 router = APIRouter()
 
@@ -67,21 +73,26 @@ def preprocess_data_endpoint():
     preprocess_data()
     return {'Message': 'Data preprocessed'}
 
+@router.get("/load_preprocessed_dataset")
+def load_preprocessed_data_endpoint(df):
+    load_preprocessed_vehicle_dataset_into_database(df)
+    return {'Message': 'Preprocessed data loaded into database'}
+
 ## Train the model
-@router.get("/trainmodel/")
+@router.get("/train_model/")
 def train_model_endpoint():
     train_model_and_create_file()
     return {'Message': 'Model trained'}
 
 ## Load the model
-@router.get("/loadmodel/")
+@router.get("/load_model/")
 def load_model_endpoint():
     load_model()
     return {'Message': 'Model loaded'}
 
 
 ## Predict the price
-@router.post("/predictprice/")
+@router.post("/predict_price/")
 def predict_price_endpoint(data:List[InputData]):
-    if model is None:
-        raise HTTPException(status_code=500, detail="Model not loaded")
+    predict_price(data)
+    return {'Message: Price predicted'}

@@ -19,7 +19,7 @@ from catboost import CatBoostRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_squared_error
 from crud.schemas import InputData
-from preprocessing import pipeline_dataset
+from preprocessing import pipeline_dataset, pipeline_single
 from typing import List, Dict
 from fastapi import HTTPException
 
@@ -38,12 +38,16 @@ logfire.instrument_sqlalchemy()
 
 
 def preprocess_data()-> pd.DataFrame:
-    query = 'SELECT * FROM bronze_car_data'
-    data_df = pd.read_sql(query,engine)
-    processed_df = pipeline_dataset.fit_transform(data_df)
-    logger.info("Raw data preprocessed")
-    return processed_df
-    
+    try:
+        query = 'SELECT * FROM bronze_car_data'
+        data_df = pd.read_sql(query,engine)
+        processed_df = pipeline_dataset.fit_transform(data_df)
+        logger.info("Raw data preprocessed")
+        return processed_df
+    except Exception as e:
+        logger.error("Raw data could not be preprocessed, error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+        
 ## creates the table on the database (not needed?)
 # def create_table():
 #     Base.metadata.create_all(engine)
@@ -51,8 +55,13 @@ def preprocess_data()-> pd.DataFrame:
 
 ## loads the preprocessed dataset into the database table
 def load_preprocessed_vehicle_dataset_into_database(df: pd.DataFrame):
-    df.to_sql('gold_car_data', con=engine, if_exists='replace', index=False)
-    logger.info("Preprocessed data loaded into gold_car_data table!")
+    try:
+        df.to_sql('gold_car_data', con=engine, if_exists='replace', index=False)
+        logger.info("Preprocessed data loaded into gold_car_data table!")
+    except:
+        logger.error("Preprocessed data could not be loaded, error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+        
 
 ## trains the model and creates a pkl file
 def train_model_and_create_file()-> pd.DataFrame:
@@ -66,22 +75,32 @@ def train_model_and_create_file()-> pd.DataFrame:
         model.fit(X_train, y_train)
         prediction = model.predict(X_test)
         mse = np.sqrt(mean_squared_error(y_test, prediction))
+        print(f"model MSE: {mse}")
         joblib.dump(model, "model.pkl")
         logger.info("Model trained and model.pkl file created!")
     except Exception as e:
-        HTTPException(status_code=500, detail=str(e))
         logger.error("Model could not be trained, error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+        
 
 
 ## loads the model from the pkl file
 def load_model():
-    global model
-    model = joblib.load("model.pkl")
+    try:
+        global model
+        model = joblib.load("model.pkl")
+        logger.info("Model loaded from model.pkl file!")
+    except Exception as e:
+        logger.error("Model could not be loaded, error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+        
 
 ## creates a prediction for the price
 def predict_price(data:List[InputData])-> Dict[str, List]:
     if model is None:
+        logger.error("Model is 'None', error: {e}")
         raise HTTPException(status_code=500, detail="Model not loaded")
+        
     input_data = [[
         d.datecrawled,
         d.vehicletype,
@@ -99,7 +118,10 @@ def predict_price(data:List[InputData])-> Dict[str, List]:
         d.postalcode,
         d.lastseen] for d in data]
     try:
-        prediction = model.predict(input_data)
+        processed_single_df = pipeline_single.fit_transform(input_data)
+        prediction = model.predict(processed_single_df)
+        logger.info("Prediction has been generated!")
     except Exception as e:
+        logger.error("Prediction could not be generated, error: {e}")
         raise HTTPException(status_code=400, detail=str(e))
     return {"Price prediction": prediction.tolist()}

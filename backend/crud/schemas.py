@@ -35,7 +35,7 @@ class VehicleTypeBase(Enum):
 # VehicleBase
 class VehicleBase(BaseModel):
     datecrawled: datetime
-    price: PositiveFloat
+    price: int
     vehicletype: str
     gearbox: str
     power: int
