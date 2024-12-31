@@ -66,6 +66,7 @@ The database consists of 2 tables:
 - **FastAPI**: Framework for building RESTful APIs.
 - **PostgreSQL**: Database for storing vehicle records.
 - **SQLAlchemy**: ORM for database interactions.
+- **Pydantic**: for data validation (input/output)
 
 ### **Frontend**
 - **Streamlit**: Web app framework for creating interactive interfaces for CRUD operations, getting predictions from the ML model and re-training the model
@@ -107,6 +108,8 @@ The database consists of 2 tables:
 
 3. **Database Management**:
    - Efficient handling of relational data using PostgreSQL and SQLAlchemy.
+   - MVC database model (model, viewer, controller)
+   - Data validation with Pydantic
    - Splitting raw data on a 'bronze' and preprocessed data ready to be consumed by the ML model on a 'gold' table
 
 4. **Containerization**:
