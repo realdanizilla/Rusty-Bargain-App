@@ -52,11 +52,11 @@ The database consists of 2 tables:
 - The model can be re-trained with updated data from the CRUD operations to ensure accuracy and adaptability.
 
 ### 5. **Steps**
-0. Create the database an inital table automatically.
+0. Create the database and inital 'bronze' table automatically.
 1. Load the existing raw vehicle data into the bronze table using a SQL script.
-2. Perform CRUD operations to manage the data (create, read, update, delete).
+2. Perform CRUD operations to manage vehicle data (create, read, update, delete).
 3. Use the ML module to predict vehicle prices based on input features.
-4. Re-train the model with updated database records as needed.
+4. Re-train the ML model with updated database records as needed.
 
 ---
 
