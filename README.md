@@ -146,6 +146,9 @@ docker-compose up --build
     - **Username**: (as defined in `docker-compose.yml`)
     - **Password**: (as defined in `docker-compose.yml`)
     - **Database**: `rusty_bargain` (or the database name you are using).
+    - once logged in, run the file data/raw_data_loader.py to generate raw_car_data.sql
+    - run raw_car_data.sql to populate the database
+
 
 ### 5. **Perform CRUD Operations**
 - Use the Streamlit interface to manage the vehicle database.
@@ -163,8 +166,10 @@ For more details, refer to the original inspiration and project structure at [Ru
 
 # Future Improvements and Enhancements
 
-1. Automate initial sql script execution - So when the application starts for the first time, the bronze table with raw data is already automatically populated
+1. Automate initial sql script execution (raw_car_data.sql) - So when the application starts for the first time, the bronze table with raw data is already automatically populated
 2. Create a streamlit tab for the ML part - re-training the model and getting predictions
-3. Add more features to the Streamlit app - such as displaying the model's performance metrics and graphs
-4. Automate creation of the 'gold' table and ML model training once the application is started for the first time
-5. Allow filtering and sorting on the streamlit table with all the 300 thousand car records and improve layout
+3. Create detailed documentation using mkdocs
+4. Create tests using pytest
+5. Add more features to the Streamlit app - such as displaying the model's performance metrics and graphs
+6. Automate creation of the 'gold' table and ML model training once the application is started for the first time
+7. Allow filtering and sorting on the streamlit table with all the 300 thousand car records and improve layout
