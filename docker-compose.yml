@@ -56,12 +56,17 @@ services:
 
   frontend:
     build: 
-      context: ./frontend
-      dockerfile: Dockerfile
+      #context: ./frontend
+      context: .
+      dockerfile: frontend/Dockerfile
     volumes:
-      - ./frontend:/app
+      # - ./frontend:/app
+      - ./frontend:/app/frontend
+      - ./backend:/app/backend
     ports:
       - "8501:8501"
+    depends_on: #added
+      - backend #added
     networks:
       - mynetwork
 
