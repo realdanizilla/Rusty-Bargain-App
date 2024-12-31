@@ -66,16 +66,23 @@ def delete_vehicle_endpoint(vehicle_id: int, db: Session = Depends(get_db)):
     return db_vehicle
 
 
+
 # ML endpoints
+
+# setting up a global variable to store the processed dataframe
+global_processed_dataframe = None
+
 ## Preprocess raw data
 @router.get("/preprocessdata/")
 def preprocess_data_endpoint():
-    preprocess_data()
+    global global_processed_dataframe
+    global_processed_dataframe = preprocess_data()
     return {'Message': 'Data preprocessed'}
 
 @router.get("/load_preprocessed_dataset")
-def load_preprocessed_data_endpoint(df):
-    load_preprocessed_vehicle_dataset_into_database(df)
+def load_preprocessed_data_endpoint():
+    global global_processed_dataframe
+    load_preprocessed_vehicle_dataset_into_database(global_processed_dataframe)
     return {'Message': 'Preprocessed data loaded into database'}
 
 ## Train the model

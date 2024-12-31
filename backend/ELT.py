@@ -37,6 +37,7 @@ logfire.instrument_sqlalchemy()
 ## loads the initial dataset into a dataframe and preprocess it
 
 
+
 def preprocess_data()-> pd.DataFrame:
     try:
         query = 'SELECT * FROM bronze_car_data'
