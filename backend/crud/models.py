@@ -7,7 +7,7 @@ class VehicleModel(Base):
     __tablename__ = "bronze_car_data"
     id = Column(Integer, primary_key=True, index=True)
     datecrawled = (Column(DateTime))
-    price = Column(Float)
+    price = Column(Integer)
     vehicletype = Column(String)
     gearbox = Column(String)
     power = Column(Integer)

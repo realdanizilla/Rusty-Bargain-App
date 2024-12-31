@@ -7,11 +7,13 @@ from typing import Optional
 
 # Categorical classes as Enum
 class GearboxBase(Enum):
+    gearbox0 = None
     gearbox1 = "manual"
-    gearbox2 = "automatic"
+    gearbox2 = "auto"
     gearbox3 = "semi-automatic"
 
 class FueltypeBase(Enum):
+    fueltype0 = None
     fueltype1 = "gasoline"
     fueltype2 = "diesel"
     fueltype3 = "electric"
@@ -22,6 +24,7 @@ class FueltypeBase(Enum):
     fueltype8 = "cng"
 
 class VehicleTypeBase(Enum):
+    vehicletype0 = None
     vehicletype1 = "bus"
     vehicletype2 = "convertible"
     vehicletype3 = "coupe"
@@ -34,22 +37,22 @@ class VehicleTypeBase(Enum):
 
 # VehicleBase
 class VehicleBase(BaseModel):
-    datecrawled: datetime
-    price: int
-    vehicletype: str
-    gearbox: str
-    power: int
-    model: str
-    mileage: int
-    registrationmonth: int
-    registrationyear: int
-    fueltype: str
-    brand: str
-    notrepaired: str
-    datecreated: datetime
-    numberofpictures: int
-    postalcode: int
-    lastseen: datetime
+    datecrawled: Optional[datetime]
+    price: Optional[int]
+    vehicletype: Optional[str]
+    gearbox: Optional[str]
+    power: Optional[int]
+    model: Optional[str]
+    mileage: Optional[int]
+    registrationmonth: Optional[int]
+    registrationyear: Optional[int]
+    fueltype: Optional[str]
+    brand: Optional[str]
+    notrepaired: Optional[str]
+    datecreated: Optional[datetime]
+    numberofpictures: Optional[int]
+    postalcode: Optional[int]
+    lastseen: Optional[datetime]
 
     @validator("gearbox")
     def check_gearbox(cls, v):

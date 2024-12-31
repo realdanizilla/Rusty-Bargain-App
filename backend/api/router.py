@@ -43,7 +43,7 @@ def read_vehicles_endpoint(db: Session = Depends(get_db)):
 ## Retrieve a specific vehicle
 @router.get("/vehicles/{vehicle_id}", response_model=VehicleResponse)
 def read_vehicle_endpoint(vehicle_id: int, db: Session = Depends(get_db)):
-    db_vehicle = get_vehicle(db, vehicle_id)
+    db_vehicle = get_vehicle(db, vehicle_id=vehicle_id)
     if db_vehicle is None:
         raise HTTPException(status_code=404, detail="Vehicle not found")
     return db_vehicle
