@@ -113,13 +113,32 @@ def predict_price(data:List[InputData])-> Dict[str, List]:
         d.registrationyear,
         d.fueltype,
         d.brand,
-        d.repaired,
+        d.notrepaired,
         d.datecreated,
         d.numberofpictures,
         d.postalcode,
         d.lastseen] for d in data]
+
+    columns = [
+        "datecrawled", "vehicletype", "gearbox", "power", "model", 
+        "mileage", "registrationmonth", "registrationyear", "fueltype", 
+        "brand", "notrepaired", "datecreated", "numberofpictures", 
+        "postalcode", "lastseen"
+    ]
     try:
-        processed_single_df = pipeline_single.fit_transform(input_data)
+        df = pd.DataFrame(input_data, columns=columns)
+        datetime_columns = ["datecrawled", "datecreated", "lastseen"]
+        #for col in datetime_columns:
+        #    if col in df.columns:
+        #        df[col] = df[col].astype(str).replace("NaT", None) 
+        processed_single_df = pipeline_single.fit_transform(df)
+        logger.info("Submitted data ran through preprocessing pipeline")
+        expected_feature_order = model.feature_names_
+        missing_columns = set(expected_feature_order) - set(processed_single_df.columns)
+        # Add missing columns and fill with 0
+        for col in missing_columns:
+            processed_single_df[col] = 0
+        processed_single_df = processed_single_df[expected_feature_order]
         prediction = model.predict(processed_single_df)
         logger.info("Prediction has been generated!")
     except Exception as e:

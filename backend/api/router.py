@@ -1,4 +1,5 @@
 import joblib
+import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database.database import SessionLocal, get_db
@@ -101,5 +102,5 @@ def load_model_endpoint():
 ## Predict the price
 @router.post("/predict_price/")
 def predict_price_endpoint(data:List[InputData]):
-    predict_price(data)
-    return {'Message: Price predicted'}
+    result = predict_price(data)
+    return {'Message': 'Price predicted', **result}

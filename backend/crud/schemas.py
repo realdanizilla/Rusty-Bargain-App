@@ -124,8 +124,8 @@ class VehicleUpdate(BaseModel):
         raise ValueError("Invalid vehicle type selection")
     
 class InputData(BaseModel):
-    datecrawled: datetime
-    vehicletype:str
+    datecrawled: Optional[datetime] = None
+    vehicletype:Optional[str] = None
     gearbox: Optional[str] = None
     power: Optional[int] = None
     model: Optional[str] = None
@@ -134,7 +134,7 @@ class InputData(BaseModel):
     registrationyear: Optional[int] = None
     fueltype: Optional[str] = None
     brand: Optional[str] = None
-    repaired: Optional[bool] = None
+    notrepaired: Optional[str] = None
     datecreated: Optional[datetime] = None
     numberofpictures: Optional[int] = None
     postalcode: Optional[int] = None
