@@ -110,7 +110,7 @@ The database consists of 2 tables:
    - Efficient handling of relational data using PostgreSQL and SQLAlchemy.
    - MVC database model (model, viewer, controller)
    - Data validation with Pydantic
-   - Splitting raw data on a 'bronze' and preprocessed data ready to be consumed by the ML model on a 'gold' table
+   - Splitting raw data on a 'bronze' table and preprocessed data ready to be consumed by the ML model on a 'gold' table
 
 4. **Containerization**:
    - Simplified deployment and scalability using Docker and Docker Compose.
