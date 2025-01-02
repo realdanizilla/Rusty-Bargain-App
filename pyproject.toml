@@ -24,6 +24,7 @@ catboost = "^1.2.7"
 opentelemetry-instrumentation-requests = "^0.50b0"
 opentelemetry-instrumentation-sqlalchemy = "^0.50b0"
 setuptools = "^75.6.0"
+streamlit-aggrid = "^1.0.5"
 
 
 [build-system]

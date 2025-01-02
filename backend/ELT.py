@@ -127,7 +127,7 @@ def predict_price(data:List[InputData])-> Dict[str, List]:
     ]
     try:
         df = pd.DataFrame(input_data, columns=columns)
-        datetime_columns = ["datecrawled", "datecreated", "lastseen"]
+        #datetime_columns = ["datecrawled", "datecreated", "lastseen"]
         #for col in datetime_columns:
         #    if col in df.columns:
         #        df[col] = df[col].astype(str).replace("NaT", None) 
