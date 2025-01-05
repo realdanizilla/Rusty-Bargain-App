@@ -17,4 +17,7 @@ COPY . /app
 ENV LOGFIRE_TOKEN=rZR2PJPQxzV73f2V24k6V6Ww9f3JpBv2T3P3x6qMWsDF
 
 # Comando para executar a aplicação
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+#CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+#CMD ["sh", "-c", "python data/seeder.py && uvicorn main:app --host 0.0.0.0 --port 8000"]
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port 8000 & python data/seeder.py && wait"]
+

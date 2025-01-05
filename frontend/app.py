@@ -416,7 +416,7 @@ with tabs[1]:
 
    # Add model training / retraining functionality
     with st.expander("Train/Re-train Model"):
-        if st.button("Start retraining model"):
+        if st.button("Start (re)training model"):
                 try:
 
                     # request 1 - preprocess raw data
@@ -495,7 +495,7 @@ with tabs[1]:
                         }],
                     )
                     if response.status_code == 200:
-                        st.success(f"Predicted price: ${response:,.2f}")
+                        st.success(response.text)
                     else:
                         st.error(f"Error generating prediction. Error: {response.text}")
                     

@@ -2,8 +2,8 @@ import csv
 from datetime import datetime
 
 # Define your CSV file and the output SQL file
-csv_file = 'car_data.csv'
-sql_file = '../raw_car_data.sql'
+csv_file = 'data/car_data.csv' 
+sql_file = 'raw_car_data.sql'
 table_name = 'bronze_car_data'
 
 # Define the columns that need datetime formatting
