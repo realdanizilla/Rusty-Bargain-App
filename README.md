@@ -9,6 +9,8 @@
 - [How to Use This Repository](#how-to-use-this-repository)
 - [Future Improvements and Enhancements](#future-improvements-and-enhancements)
 
+For detailed documentation, please check [this link](https://realdanizilla.github.io/Rusty-Bargain-App/)
+
 ---
 
 ## Project Objective

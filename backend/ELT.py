@@ -39,6 +39,14 @@ logfire.instrument_sqlalchemy()
 
 
 def preprocess_data()-> pd.DataFrame:
+    """Preprocesses the raw data from bronze_car_data table using the pipeline_dataset
+
+    Raises:
+        HTTPException: Raw data could not be preprocessed
+
+    Returns:
+        pd.DataFrame: Preprocessed data
+    """
     try:
         query = 'SELECT * FROM bronze_car_data'
         data_df = pd.read_sql(query,engine)
@@ -49,13 +57,17 @@ def preprocess_data()-> pd.DataFrame:
         logger.error("Raw data could not be preprocessed, error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
         
-## creates the table on the database (not needed?)
-# def create_table():
-#     Base.metadata.create_all(engine)
-#     logger.info("gold_car_data Table succesfully created!")
 
 ## loads the preprocessed dataset into the database table
 def load_preprocessed_vehicle_dataset_into_database(df: pd.DataFrame):
+    """Loads the preprocessed data into the gold_car_data table in the database
+
+    Args:
+        df (pd.DataFrame): Preprocessed data to be loaded into the database
+
+    Raises:
+        HTTPException: Preprocessed data could not be loaded into the database
+    """
     try:
         df.to_sql('gold_car_data', con=engine, if_exists='replace', index=False)
         logger.info("Preprocessed data loaded into gold_car_data table!")
@@ -66,6 +78,11 @@ def load_preprocessed_vehicle_dataset_into_database(df: pd.DataFrame):
 
 ## trains the model and creates a pkl file
 def train_model_and_create_file()-> pd.DataFrame:
+    """Trains the model using the gold_car_data table and creates a model.pkl file
+
+    Raises:
+        HTTPException: Model could not be trained
+    """
     try:
         training_query = 'SELECT * FROM gold_car_data'
         data = pd.read_sql(training_query,engine)
@@ -87,6 +104,11 @@ def train_model_and_create_file()-> pd.DataFrame:
 
 ## loads the model from the pkl file
 def load_model():
+    """Loads the model from the model.pkl file
+
+    Raises:
+        HTTPException: Model could not be loaded
+    """
     try:
         global model
         model = joblib.load("model.pkl")
@@ -98,6 +120,18 @@ def load_model():
 
 ## creates a prediction for the price
 def predict_price(data:List[InputData])-> Dict[str, List]:
+    """Generates a prediction for the price of a vehicle using the model
+
+    Args:
+        data (List[InputData]): List of input data for the prediction according to the InputData schema
+
+    Raises:
+        HTTPException: Prediction could not be generated
+        HTTPException: Model not loaded
+
+    Returns:
+        Dict[str, List]: Prediction for the price of the vehicle
+    """
     if model is None:
         logger.error("Model is 'None', error: {e}")
         raise HTTPException(status_code=500, detail="Model not loaded")

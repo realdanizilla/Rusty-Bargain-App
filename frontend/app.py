@@ -206,72 +206,6 @@ with tabs[0]:
             response = requests.delete(f"http://backend:8000/vehicles/{delete_id}")
             show_response_message(response)
 
-    # Update Vehicle old
-    # with st.expander("Update Vehicle old"):
-    #     with st.form("update_vehicle old"):
-    #         update_id = st.number_input("Vehicle ID", min_value=1, format="%d")
-    #         new_datecrawled = st.date_input("Enter the date when this vehicle was found", value='today', format='YYYY/MM/DD')
-    #         new_price = st.number_input('Enter the current price')
-    #         new_vehicletype = st.selectbox("Select a vehicle type", options=vehicle_types)
-    #         new_gearboxtype = st.selectbox("Select a gearbox type", options=gearbox_types)
-    #         new_fueltype = st.selectbox("Select a fuel type", options=fuel_types)
-    #         new_power = st.number_input("Enter the vehicle's horsepower")
-    #         new_model = st.text_area("Enter the vehicle's model")
-    #         new_mileage = st.number_input("Enter the vehicle's mileage")
-    #         new_registrationmonth = st.number_input("Enter the month when the vehicle was registered",min_value=0, max_value=12)
-    #         new_registrationyear = st.number_input("Enter the month when the vehicle was registered (YYYY)")
-    #         new_brand = st.text_area("Enter the vehicle's brand")
-    #         new_notrepaired = st.selectbox("This vehicle has never been repaired",[None, "yes", "no"])
-    #         new_datecreated = st.date_input("Enter the date when this vehicle was registered on our system", value='today', format='YYYY/MM/DD')
-    #         new_numberofpictures = st.number_input("How many good quality pictures do we for this vehicle?")
-    #         new_postalcode = st.number_input("Which zipcode is the vehicle parked at?")
-    #         new_lastseen = st.date_input("Enter the date we last saw this vehicle")
-
-    #         update_button = st.form_submit_button("Update Vehicle")
-
-    #         if update_button:
-    #             update_data = {}
-    #             if new_datecrawled:
-    #                 update_data["datecrawled"] = new_datecrawled
-    #             if new_price:
-    #                 update_data["price"] = new_price
-    #             if new_vehicletype:
-    #                 update_data["vehicletype"] = new_vehicletype
-    #             if new_gearboxtype:
-    #                 update_data["gearbox"] = new_gearboxtype
-    #             if new_fueltype:
-    #                 update_data["fueltype"] = new_fueltype
-    #             if new_power:
-    #                 update_data["power"] = new_power
-    #             if new_model:
-    #                 update_data["model"] = new_model
-    #             if new_mileage:
-    #                 update_data["mileage"] = new_mileage
-    #             if new_registrationmonth:
-    #                 update_data["registrationmonth"] = new_registrationmonth
-    #             if new_registrationyear:
-    #                 update_data["registrationyear"] = new_registrationyear
-    #             if new_brand:
-    #                 update_data["brand"] = new_brand
-    #             if new_notrepaired:
-    #                 update_data["notrepaired"] = new_notrepaired
-    #             if new_datecreated:
-    #                 update_data["datecreated"] = new_datecreated
-    #             if new_numberofpictures:
-    #                 update_data["numberofpictures"] = new_numberofpictures
-    #             if new_postalcode:
-    #                 update_data["postalcode"] = new_postalcode
-    #             if lastseen:
-    #                 update_data["lastseen"] = lastseen
-
-    #             if update_data:
-    #                 response = requests.put(
-    #                     f"http://backend:8000/vehicles/{update_id}", json=update_data
-    #                 )
-    #                 show_response_message(response)
-    #             else:
-    #                 st.error("No information provided for update")
-
     # Update Vehicle new
     with st.expander("Update Vehicle"):
         # Step 1: Input the Vehicle ID
@@ -417,6 +351,7 @@ with tabs[1]:
    # Add model training / retraining functionality
     with st.expander("Train/Re-train Model"):
         if st.button("Start (re)training model"):
+            with st.spinner("Processing Data and Training the model..."):
                 try:
 
                     # request 1 - preprocess raw data
@@ -495,7 +430,12 @@ with tabs[1]:
                         }],
                     )
                     if response.status_code == 200:
-                        st.success(response.text)
+                        result = response.json()
+                        predicted_price = result.get("Price prediction",[None])[0]
+                        if predicted_price is not None:
+                            st.success(f"Predicted Price: {predicted_price:.2f}")
+                        else:
+                            st.error("Prediction Data missing in response.")
                     else:
                         st.error(f"Error generating prediction. Error: {response.text}")
                     

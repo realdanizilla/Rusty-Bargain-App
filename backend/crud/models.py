@@ -4,6 +4,11 @@ from database.database import Base
 # This file contains the table models for the database
 # Need to review data types based on what is on the preprocessed data
 class VehicleModel(Base):
+    """Creates a table on the database for the vehicles
+
+    Args:
+        Base (_type_): Inherits SQLAlchemy's base class parameter
+    """
     __tablename__ = "bronze_car_data"
     id = Column(Integer, primary_key=True, index=True)
     datecrawled = (Column(DateTime))
