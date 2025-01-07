@@ -314,8 +314,26 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#application-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Application Flow
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flowchart-lr-subgraph-etlrusty-bargain-app-abase-vehicle-dataset-bextract-extract_from_csv-bextract-extract_from_csv-ccreate-bronze-table-on-postgres-database-and-seed-it-with-350k-vehicle-records-ccreate-bronze-table-on-postgres-database-and-seed-it-with-350k-vehicle-records-dcrud-operations-create-read-update-delete-vehicles-from-database-dcrud-operations-create-read-update-delete-vehicles-from-database-etransformpreprocess-database-using-ml-pipeline-etransformpreprocess-database-using-ml-pipeline-fload-create-gold-table-on-postgres-database-fload-create-gold-table-on-postgres-database-trainre-train-ml-model-ggenerate-price-prediction-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      flowchart LR subgraph ETL[Rusty Bargain App] A(Base vehicle dataset) --&gt; B[Extract: extract_from_csv] B[Extract: extract_from_csv] --&gt; C[Create bronze table on postgres database and seed it with 350k vehicle records] C[Create bronze table on postgres database and seed it with 350k vehicle records] --&gt; D[CRUD Operations Create, Read, Update Delete vehicles from database] D[CRUD Operations Create, Read, Update Delete vehicles from database] --&gt; E[Transform:Preprocess database using ML pipeline] E[Transform:Preprocess database using ML pipeline] --&gt; F[Load: Create gold table on postgres database] F[Load: Create gold table on postgres database] --&gt; |Train/Re-train ML Model| G(Generate Price Prediction) end
+    </span>
+  </a>
   
 </li>
       
@@ -563,8 +581,26 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#application-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Application Flow
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flowchart-lr-subgraph-etlrusty-bargain-app-abase-vehicle-dataset-bextract-extract_from_csv-bextract-extract_from_csv-ccreate-bronze-table-on-postgres-database-and-seed-it-with-350k-vehicle-records-ccreate-bronze-table-on-postgres-database-and-seed-it-with-350k-vehicle-records-dcrud-operations-create-read-update-delete-vehicles-from-database-dcrud-operations-create-read-update-delete-vehicles-from-database-etransformpreprocess-database-using-ml-pipeline-etransformpreprocess-database-using-ml-pipeline-fload-create-gold-table-on-postgres-database-fload-create-gold-table-on-postgres-database-trainre-train-ml-model-ggenerate-price-prediction-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      flowchart LR subgraph ETL[Rusty Bargain App] A(Base vehicle dataset) --&gt; B[Extract: extract_from_csv] B[Extract: extract_from_csv] --&gt; C[Create bronze table on postgres database and seed it with 350k vehicle records] C[Create bronze table on postgres database and seed it with 350k vehicle records] --&gt; D[CRUD Operations Create, Read, Update Delete vehicles from database] D[CRUD Operations Create, Read, Update Delete vehicles from database] --&gt; E[Transform:Preprocess database using ML pipeline] E[Transform:Preprocess database using ML pipeline] --&gt; F[Load: Create gold table on postgres database] F[Load: Create gold table on postgres database] --&gt; |Train/Re-train ML Model| G(Generate Price Prediction) end
+    </span>
+  </a>
   
 </li>
       
@@ -736,16 +772,20 @@
 <hr />
 <h2 id="features">Features</h2>
 <ol>
-<li><strong>Vehicle Database Management</strong>:</li>
-<li>View, add, update, and delete vehicle records.</li>
 <li>
-<p>Use an interactive frontend to filter, sort, and search for vehicles.</p>
+<p><strong>Vehicle Database Management</strong>:</p>
+<ul>
+<li>View, add, update, and delete vehicle records.</li>
+<li>Use an interactive frontend to filter, sort, and search for vehicles.</li>
+</ul>
 </li>
 <li>
 <p><strong>Machine Learning (ML) Model</strong>:</p>
-</li>
+<ul>
 <li>Train or retrain the model using updated data.</li>
 <li>Predict vehicle prices based on input features such as mileage, horsepower, brand, and fuel type.</li>
+</ul>
+</li>
 </ol>
 <hr />
 <h2 id="application-architecture">Application Architecture</h2>
@@ -765,7 +805,18 @@
 <li>Viewing and managing vehicle records.</li>
 <li>Initiating model training and predictions.</li>
 </ul>
-<hr />
+<h3 id="application-flow"><strong>Application Flow</strong></h3>
+<h2 id="flowchart-lr-subgraph-etlrusty-bargain-app-abase-vehicle-dataset-bextract-extract_from_csv-bextract-extract_from_csv-ccreate-bronze-table-on-postgres-database-and-seed-it-with-350k-vehicle-records-ccreate-bronze-table-on-postgres-database-and-seed-it-with-350k-vehicle-records-dcrud-operations-create-read-update-delete-vehicles-from-database-dcrud-operations-create-read-update-delete-vehicles-from-database-etransformpreprocess-database-using-ml-pipeline-etransformpreprocess-database-using-ml-pipeline-fload-create-gold-table-on-postgres-database-fload-create-gold-table-on-postgres-database-trainre-train-ml-model-ggenerate-price-prediction-end"><pre class="mermaid"><code>flowchart LR
+subgraph ETL[Rusty Bargain App]
+    A(Base vehicle dataset) --&gt; B[Extract: extract_from_csv]
+    B[Extract: extract_from_csv] --&gt; C[Create bronze table on postgres database and seed it with 350k vehicle records]
+    C[Create bronze table on postgres database and seed it with 350k vehicle records] --&gt; D[CRUD Operations Create, Read, Update Delete vehicles from database]
+    D[CRUD Operations Create, Read, Update Delete vehicles from database] --&gt; E[Transform:Preprocess database using ML pipeline] 
+    E[Transform:Preprocess database using ML pipeline] --&gt; F[Load: Create gold table on postgres database]
+    F[Load: Create gold table on postgres database] --&gt; |Train/Re-train ML Model| G(Generate Price Prediction)
+
+
+end</code></pre></h2>
 <h2 id="project-structure">Project Structure</h2>
 <h3 id="key-backend-files">Key Backend Files</h3>
 <ul>
