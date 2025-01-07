@@ -146,20 +146,8 @@ class CustomTransformerSingle(BaseEstimator, TransformerMixin):
 
     def fit(self, X, y=None):
         return self
-    
-    # def load_label_encoder_brand(self):
-    #     self.le = joblib.load('label_encoder_brand.pkl')
-    #     return self.le
-
-    # def load_scaler(self):
-    #     self.scaler = joblib.load('scaler.pkl')
-    #     return self.scaler
 
     def transform(self, X):
-        # if self.le is None:
-        #     self.load_label_encoder()
-        # if self.scaler is None:
-        #     self.load_scaler()
 
         X = column_name_cleaning(X)
         X = handling_date_formats(X)

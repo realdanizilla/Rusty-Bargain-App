@@ -8,6 +8,7 @@ import requests
 import pandas as pd
 from crud.schemas import FueltypeBase, VehicleTypeBase, GearboxBase
 from st_aggrid import AgGrid, GridOptionsBuilder
+from datetime import datetime
 
 
 # variables to access Enum values from schemas
@@ -40,6 +41,14 @@ def show_response_message(response):
                     st.error(f"Error: {data['detail']}")
         except ValueError:
             st.error("Unknown error. Could not decode the response.")
+
+# Auxiliary function to handle dates
+def parse_date(date_str):
+    """Convert ISO 8601 string to datetime.date or return None if invalid."""
+    try:
+        return datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S").date() if date_str else None
+    except ValueError:
+        return None
 
 # Tab 1 - Vehicle database
 with tabs[0]:
@@ -190,7 +199,7 @@ with tabs[0]:
                 response = AgGrid(
                     df,
                     gridOptions=grid_options,
-                    height=600,
+                    height=100,
                     fit_columns_on_grid_load=True,
                     enable_enterprise_modules=False
                 )
@@ -238,11 +247,11 @@ with tabs[0]:
                 # Populate fields with existing data
                 new_datecrawled = st.date_input(
                     "Enter the date when this vehicle was found",
-                    value=vehicle_data.get("datecrawled", None)
+                    value=parse_date(vehicle_data.get("datecrawled"))
                 )
                 new_price = st.number_input(
                     "Enter the current price",
-                    value=vehicle_data.get("price", 0.0)
+                    value=int(vehicle_data.get("price").item()) if not pd.isna(vehicle_data.get("price")) else 0
                 )
                 new_vehicletype = st.selectbox(
                     "Select a vehicle type",
@@ -261,7 +270,7 @@ with tabs[0]:
                 )
                 new_power = st.number_input(
                     "Enter the vehicle's horsepower",
-                    value=vehicle_data.get("power", 0)
+                    value=int(vehicle_data.get("power").item()) if not pd.isna(vehicle_data.get("power")) else 0
                 )
                 new_model = st.text_area(
                     "Enter the vehicle's model",
@@ -269,16 +278,16 @@ with tabs[0]:
                 )
                 new_mileage = st.number_input(
                     "Enter the vehicle's mileage",
-                    value=vehicle_data.get("mileage", 0)
+                    value=int(vehicle_data.get("mileage").item()) if not pd.isna(vehicle_data.get("mileage")) else 0
                 )
                 new_registrationmonth = st.number_input(
                     "Enter the month when the vehicle was registered",
                     min_value=0, max_value=12,
-                    value=vehicle_data.get("registrationmonth", 0)
+                    value=int(vehicle_data.get("registrationmonth").item()) if pd.isna(vehicle_data.get("registrationmonth")) else 0
                 )
                 new_registrationyear = st.number_input(
                     "Enter the year when the vehicle was registered (YYYY)",
-                    value=vehicle_data.get("registrationyear", 0)
+                    value=int(vehicle_data.get("registrationyear").item()) if pd.isna(vehicle_data.get("registrationyear")) else 0
                 )
                 new_brand = st.text_area(
                     "Enter the vehicle's brand",
@@ -291,19 +300,19 @@ with tabs[0]:
                 )
                 new_datecreated = st.date_input(
                     "Enter the date when this vehicle was registered on our system",
-                    value=vehicle_data.get("datecreated", None)
+                    value=parse_date(vehicle_data.get("datecreated"))
                 )
                 new_numberofpictures = st.number_input(
                     "How many good quality pictures do we have for this vehicle?",
-                    value=vehicle_data.get("numberofpictures", 0)
+                    value=int(vehicle_data.get("numberofpictures").item()) if pd.isna(vehicle_data.get("numberofpictures")) else 0
                 )
                 new_postalcode = st.number_input(
                     "Which zipcode is the vehicle parked at?",
-                    value=vehicle_data.get("postalcode", 0)
+                    value=int(vehicle_data.get("postalcode").item()) if pd.isna(vehicle_data.get("postalcode")) else 0
                 )
                 new_lastseen = st.date_input(
                     "Enter the date we last saw this vehicle",
-                    value=vehicle_data.get("lastseen", None)
+                    value=parse_date(vehicle_data.get("lastseen"))
                 )
 
                 # Update button

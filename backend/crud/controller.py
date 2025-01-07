@@ -3,11 +3,12 @@
 from sqlalchemy.orm import Session
 from crud.schemas import VehicleCreate, VehicleUpdate
 from crud.models import VehicleModel
+from typing import Any
 
 
 # Create function
 ## Create a record for a new vehicle
-def create_vehicle(db: Session, vehicle: VehicleCreate):
+def create_vehicle(db: Session, vehicle: VehicleCreate)->dict:
     """Creates a new vehicle on the database
 
     Args:
@@ -15,7 +16,7 @@ def create_vehicle(db: Session, vehicle: VehicleCreate):
         vehicle (VehicleCreate): Vehicle data matching the VehicleCreate schema
 
     Returns:
-        _type_: Created Vehicle
+        new_vehicle_data: Created Vehicle information
     """
     db_vehicle = VehicleModel(**vehicle.model_dump())
     db.add(db_vehicle)
@@ -26,7 +27,7 @@ def create_vehicle(db: Session, vehicle: VehicleCreate):
 
 # Read functions
 ## retrieves a specific vehicle from the database
-def get_vehicle(db: Session, vehicle_id: int):
+def get_vehicle(db: Session, vehicle_id: int)->dict:
     """Reads a vehicle from the database
 
     Args:
@@ -34,12 +35,12 @@ def get_vehicle(db: Session, vehicle_id: int):
         vehicle_id (int): The id of the vehicle to be retrieved
 
     Returns:
-        _type_: Selected vehicle with the given id
+        vehicle_data: Information for selected vehicle with the given id
     """
     return db.query(VehicleModel).filter(VehicleModel.id == vehicle_id).first()
 
 ## retrieves all vehicles from the database
-def get_vehicles(db: Session, skip: int = 0, limit: int = 100):
+def get_vehicles(db: Session, skip: int = 0, limit: int = 100)->list[dict[str,Any]]:
     """Reads all vehicles on the database
 
     Args:
@@ -48,14 +49,14 @@ def get_vehicles(db: Session, skip: int = 0, limit: int = 100):
         limit (int, optional): limits number of vehicles per page. Defaults to 100.
 
     Returns:
-        _type_: the full list of vehicles in the database
+        vehicles_data: the full list of dictionaries with vehicles from the database
     """
     return db.query(VehicleModel).offset(skip).limit(limit).all()
 
 
 # Update function
 ## Update a vehicle in the database
-def update_vehicle(db: Session, vehicle_id: int, vehicle: VehicleUpdate):
+def update_vehicle(db: Session, vehicle_id: int, vehicle: VehicleUpdate)->dict:
     """Updates information of a vehicle in the database
 
     Args:
@@ -64,7 +65,7 @@ def update_vehicle(db: Session, vehicle_id: int, vehicle: VehicleUpdate):
         vehicle (VehicleUpdate): Vehicle data matching the VehicleUpdate schema
 
     Returns:
-        _type_: Updated vehicle information
+        updated_vehicle_data: Updated vehicle information
     """
     db_vehicle = db.query(VehicleModel).filter(VehicleModel.id == vehicle_id).first()
 
@@ -108,7 +109,7 @@ def update_vehicle(db: Session, vehicle_id: int, vehicle: VehicleUpdate):
 
 # Delete function
 ## Delete a vehicle from the database
-def delete_vehicle(db: Session, vehicle_id: int):
+def delete_vehicle(db: Session, vehicle_id: int)->dict:
     """Removes a vehicle from the database
 
     Args:
@@ -116,7 +117,7 @@ def delete_vehicle(db: Session, vehicle_id: int):
         vehicle_id (int): The id of the vehicle to be deleted
 
     Returns:
-        _type_: Deleted vehicle
+        delete_vehicle_data: Information for the Deleted vehicle
     """
     db_vehicle = db.query(VehicleModel).filter(VehicleModel.id == vehicle_id).first()
     db.delete(db_vehicle)

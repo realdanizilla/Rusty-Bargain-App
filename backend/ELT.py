@@ -45,7 +45,7 @@ def preprocess_data()-> pd.DataFrame:
         HTTPException: Raw data could not be preprocessed
 
     Returns:
-        pd.DataFrame: Preprocessed data
+        car_dataset: Preprocessed dataset
     """
     try:
         query = 'SELECT * FROM bronze_car_data'
@@ -59,7 +59,7 @@ def preprocess_data()-> pd.DataFrame:
         
 
 ## loads the preprocessed dataset into the database table
-def load_preprocessed_vehicle_dataset_into_database(df: pd.DataFrame):
+def load_preprocessed_vehicle_dataset_into_database(df: pd.DataFrame)-> pd.DataFrame:
     """Loads the preprocessed data into the gold_car_data table in the database
 
     Args:

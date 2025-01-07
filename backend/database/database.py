@@ -17,10 +17,10 @@ POSTGRES_PORT = os.getenv("POSTGRES_PORT")
 POSTGRES_DB = os.getenv("POSTGRES_DB")
 
 # Database URL setup
-#DATABASE_URL = (
+# DATABASE_URL = (
 #    f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}"
 #    f"@{POSTGRES_HOST}/{POSTGRES_DB}"
-#)
+# )
 DATABASE_URL = 'postgresql://user:password@postgres/rusty_bargain'
 
 print(DATABASE_URL)

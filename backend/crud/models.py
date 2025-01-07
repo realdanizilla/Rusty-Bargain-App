@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Float, String, Integer, DateTime
+from sqlalchemy import Column, String, Integer, DateTime
 from database.database import Base
 
 # This file contains the table models for the database
@@ -7,7 +7,7 @@ class VehicleModel(Base):
     """Creates a table on the database for the vehicles
 
     Args:
-        Base (_type_): Inherits SQLAlchemy's base class parameter
+        Base (class): Inherits declarative base class parameter from database.py
     """
     __tablename__ = "bronze_car_data"
     id = Column(Integer, primary_key=True, index=True)

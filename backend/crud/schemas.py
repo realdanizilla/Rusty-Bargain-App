@@ -10,7 +10,7 @@ class GearboxBase(Enum):
     """List of gearbox types for the vehicles
 
     Args:
-        Enum (_type_): Gearbox types
+        selected_gearbox (Enum): Gearbox types
     """
     gearbox0 = None
     gearbox1 = "manual"
@@ -21,7 +21,7 @@ class FueltypeBase(Enum):
     """List of fuel types for the vehicles
 
     Args:
-        Enum (_type_): Vehicle Fuel types
+        selected_fuel_type (Enum): Vehicle Fuel types
     """
     fueltype0 = None
     fueltype1 = "gasoline"
@@ -36,10 +36,8 @@ class FueltypeBase(Enum):
 class VehicleTypeBase(Enum):
     """List of vehicle types for the vehicles
 
-
-
     Args:
-        Enum (_type_): Vehicle types
+        selected_vehicle_type (Enum): Vehicle types
     """
     vehicletype0 = None
     vehicletype1 = "bus"
@@ -57,7 +55,7 @@ class VehicleBase(BaseModel):
     """Base schema for the vehicle data
 
     Args:
-        BaseModel (_type_): Inherit Pydantic's BaseModel class
+        BaseModel (class): Inherit Pydantic's BaseModel class
 
     Raises:
         ValueError: wrong selection of Gearbox
@@ -65,7 +63,7 @@ class VehicleBase(BaseModel):
         ValueError: wrong selection of Vehicle type
 
     Returns:
-        _type_: vehicle data according to the schema
+        dict: vehicle data according to the schema
     """
     datecrawled: Optional[datetime]
     price: Optional[int]

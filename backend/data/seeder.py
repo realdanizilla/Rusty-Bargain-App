@@ -11,7 +11,8 @@ DB_PASSWORD = "password"
 SQL_FILE_PATH = "raw_car_data.sql"
 
 def run_generate_sql_script():
-    """Run the script to generate the .sql file."""
+    """Run the script to generate the .sql file.
+    """
     try:
         print("Running raw_data_loader.py to create the .sql file...")
         result = subprocess.run(["python", "data/raw_data_loader.py"], check=True, capture_output=True, text=True)
