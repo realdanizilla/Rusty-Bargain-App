@@ -39,8 +39,8 @@ def show_response_message(response):
                 else:
                     # Caso contrário, mostre a mensagem de erro diretamente
                     st.error(f"Error: {data['detail']}")
-        except ValueError:
-            st.error("Unknown error. Could not decode the response.")
+        except Exception as e:
+            st.error(f"Unknown error. Could not decode the response. Error: {e}")
 
 # Auxiliary function to handle dates
 def parse_date(date_str):
@@ -102,8 +102,8 @@ with tabs[0]:
     # View vehicles
     with st.expander("View Vehicles"):
         # Use session state to store the DataFrame
-        if "vehicle_data" not in st.session_state:
-            st.session_state.vehicle_data = None
+        #if "vehicle_data" not in st.session_state:
+        #    st.session_state.vehicle_data = None
 
         if st.button("Show all Vehicles"):
             response = requests.get("http://backend:8000/vehicles/")
@@ -133,13 +133,13 @@ with tabs[0]:
                 ]
 
                 # Store the data in session state
-                st.session_state.vehicle_data = df
+                #st.session_state.vehicle_data = df
             else:
                 show_response_message(response)
 
         # Check if data is available in session state
-        if st.session_state.vehicle_data is not None:
-            df = st.session_state.vehicle_data
+        #if st.session_state.vehicle_data is not None:
+        #    df = st.session_state.vehicle_data
 
             # Configure the AgGrid table
             gb = GridOptionsBuilder.from_dataframe(df)
@@ -240,18 +240,18 @@ with tabs[0]:
                 st.session_state.vehicle_data = None
 
         # Step 2: Populate the form if vehicle data is available
-        if st.session_state.vehicle_data is not None and not st.session_state.vehicle_data.empty:
+        if st.session_state.vehicle_data is not None:
             vehicle_data = st.session_state.vehicle_data  # Retrieve data from session state
 
             with st.form("update_vehicle"):
                 # Populate fields with existing data
                 new_datecrawled = st.date_input(
                     "Enter the date when this vehicle was found",
-                    value=parse_date(vehicle_data.get("datecrawled"))
+                    value=parse_date(vehicle_data.get("datecrawled",None))
                 )
                 new_price = st.number_input(
                     "Enter the current price",
-                    value=int(vehicle_data.get("price").item()) if not pd.isna(vehicle_data.get("price")) else 0
+                    value=int(vehicle_data.get("price",0) or 0)
                 )
                 new_vehicletype = st.selectbox(
                     "Select a vehicle type",
@@ -270,7 +270,7 @@ with tabs[0]:
                 )
                 new_power = st.number_input(
                     "Enter the vehicle's horsepower",
-                    value=int(vehicle_data.get("power").item()) if not pd.isna(vehicle_data.get("power")) else 0
+                    value=int(vehicle_data.get("power",None) or 0)
                 )
                 new_model = st.text_area(
                     "Enter the vehicle's model",
@@ -278,16 +278,16 @@ with tabs[0]:
                 )
                 new_mileage = st.number_input(
                     "Enter the vehicle's mileage",
-                    value=int(vehicle_data.get("mileage").item()) if not pd.isna(vehicle_data.get("mileage")) else 0
+                    value=int(vehicle_data.get("mileage",0) or 0)
                 )
                 new_registrationmonth = st.number_input(
                     "Enter the month when the vehicle was registered",
                     min_value=0, max_value=12,
-                    value=int(vehicle_data.get("registrationmonth").item()) if pd.isna(vehicle_data.get("registrationmonth")) else 0
+                    value=int(vehicle_data.get("registrationmonth",0) or 0)
                 )
                 new_registrationyear = st.number_input(
                     "Enter the year when the vehicle was registered (YYYY)",
-                    value=int(vehicle_data.get("registrationyear").item()) if pd.isna(vehicle_data.get("registrationyear")) else 0
+                    value=int(vehicle_data.get("registrationyear",0) or 0)
                 )
                 new_brand = st.text_area(
                     "Enter the vehicle's brand",
@@ -304,11 +304,11 @@ with tabs[0]:
                 )
                 new_numberofpictures = st.number_input(
                     "How many good quality pictures do we have for this vehicle?",
-                    value=int(vehicle_data.get("numberofpictures").item()) if pd.isna(vehicle_data.get("numberofpictures")) else 0
+                    value=int(vehicle_data.get("numberofpictures",0) or 0)
                 )
                 new_postalcode = st.number_input(
                     "Which zipcode is the vehicle parked at?",
-                    value=int(vehicle_data.get("postalcode").item()) if pd.isna(vehicle_data.get("postalcode")) else 0
+                    value=int(vehicle_data.get("postalcode",None) or 0)
                 )
                 new_lastseen = st.date_input(
                     "Enter the date we last saw this vehicle",
@@ -376,8 +376,19 @@ with tabs[1]:
                             # request 3 - train the model
                             response = requests.get("http://backend:8000/train_model")
                             if response.status_code == 200:
-                                st.success("Model Trained!")
-                            
+                                # model performance stuff
+                                data = response.json()
+                                #display MSE
+                                st.subheader("Mean Performance")
+                                st.write(f"Mean Squared Error (MSE): {data["MSE"]}")
+
+                                #display feature importance
+                                st.subheader("Feature Importance")
+                                importance_df = pd.DataFrame(data["Feature Importance"])
+                                st.write(importance_df)
+                                st.bar_chart(importance_df.set_index("Feature"))
+                                st.success(data["Message"])
+
                                 # request 4 - load the model
                                 response = requests.get("http://backend:8000/load_model")
                                 if response.status_code == 200:

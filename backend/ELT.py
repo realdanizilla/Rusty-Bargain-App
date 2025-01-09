@@ -22,21 +22,21 @@ from crud.schemas import InputData
 from preprocessing import pipeline_dataset, pipeline_single
 from typing import List, Dict
 from fastapi import HTTPException
-
+from logging_config import setup_logging
 # ------------------------------------------------------
 # Logfire setup
-logfire.configure()
-basicConfig(handlers=[logfire.LogfireLoggingHandler()])
-logger = getLogger(__name__)
-logger.setLevel(logging.INFO)
-logfire.instrument_requests()
-logfire.instrument_sqlalchemy()
+# logfire.configure()
+# basicConfig(handlers=[logfire.LogfireLoggingHandler()])
+# logger = getLogger(__name__)
+# logger.setLevel(logging.INFO)
+# logfire.instrument_requests()
+# logfire.instrument_sqlalchemy()
 # ------------------------------------------------------
 
 # Functions below are used to start from raw data and end with a trained model file
 ## loads the initial dataset into a dataframe and preprocess it
 
-
+logger = setup_logging()
 
 def preprocess_data()-> pd.DataFrame:
     """Preprocesses the raw data from bronze_car_data table using the pipeline_dataset
@@ -48,6 +48,7 @@ def preprocess_data()-> pd.DataFrame:
         car_dataset: Preprocessed dataset
     """
     try:
+        logger.info("Preprocessing raw data")
         query = 'SELECT * FROM bronze_car_data'
         data_df = pd.read_sql(query,engine)
         processed_df = pipeline_dataset.fit_transform(data_df)
@@ -69,6 +70,7 @@ def load_preprocessed_vehicle_dataset_into_database(df: pd.DataFrame)-> pd.DataF
         HTTPException: Preprocessed data could not be loaded into the database
     """
     try:
+        logger.info("Loading preprocessed data into gold_car_data table")
         df.to_sql('gold_car_data', con=engine, if_exists='replace', index=False)
         logger.info("Preprocessed data loaded into gold_car_data table!")
     except:
@@ -84,6 +86,7 @@ def train_model_and_create_file()-> pd.DataFrame:
         HTTPException: Model could not be trained
     """
     try:
+        logger.info("Training model and creating model.pkl file")
         training_query = 'SELECT * FROM gold_car_data'
         data = pd.read_sql(training_query,engine)
         X = data.drop(columns=["price"])
@@ -94,8 +97,15 @@ def train_model_and_create_file()-> pd.DataFrame:
         prediction = model.predict(X_test)
         mse = np.sqrt(mean_squared_error(y_test, prediction))
         print(f"model MSE: {mse}")
+        feature_importance = model.get_feature_importance()
+        feature_names = X.columns
+        importance_df = pd.DataFrame({
+            "feature": feature_names,
+            "importance": feature_importance
+        }).sort_values(by="importance", ascending=False)
         joblib.dump(model, "model.pkl")
         logger.info("Model trained and model.pkl file created!")
+        return mse, importance_df
     except Exception as e:
         logger.error("Model could not be trained, error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -110,6 +120,7 @@ def load_model():
         HTTPException: Model could not be loaded
     """
     try:
+        logger.info("Loading model from model.pkl file")
         global model
         model = joblib.load("model.pkl")
         logger.info("Model loaded from model.pkl file!")
@@ -160,6 +171,7 @@ def predict_price(data:List[InputData])-> Dict[str, List]:
         "postalcode", "lastseen"
     ]
     try:
+        logger.info("Generating prediction for price")
         df = pd.DataFrame(input_data, columns=columns)
         #datetime_columns = ["datecrawled", "datecreated", "lastseen"]
         #for col in datetime_columns:

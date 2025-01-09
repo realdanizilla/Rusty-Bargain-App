@@ -59,7 +59,7 @@ def read_vehicles_endpoint(db: Session = Depends(get_db))->list[dict[str, Any]]:
     Returns:
         vehicles_data: A list of dictionaries with key-value pairs with information for all vehicles
     """
-    vehicles = get_vehicles(db)
+    vehicles = get_vehicles(db, limit=None)
     return vehicles
 
 ## Retrieve a specific vehicle
@@ -161,10 +161,18 @@ def train_model_endpoint():
     """Trains the model and creates a pkl file
 
     Returns:
-        message: model trained success/fail
+        JSON: Contains MSE, feature importance, and a success message
     """
-    train_model_and_create_file()
-    return {'Message': 'Model trained'}
+    try:
+        mse, importance_df = train_model_and_create_file()
+        importance_dict = importance_df.to_dict(orient='records')
+        return {
+            'MSE': mse,
+            'Feature Importance': importance_dict,
+            'Message': 'Model trained'
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 ## Load the model
 @router.get("/load_model/")

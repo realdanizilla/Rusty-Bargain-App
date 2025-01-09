@@ -1,0 +1,6 @@
+[theme]
+primaryColor = "#1abc9c"  # Teal green
+backgroundColor = "#1e1e2f"  # Dark blue-gray
+secondaryBackgroundColor = "#2c2c3e"  # Slightly lighter dark gray
+textColor = "#ffffff"  # White
+font = "sans serif"  # Modern font

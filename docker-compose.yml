@@ -41,10 +41,12 @@ services:
 
   backend:
     build: 
-      context: ./backend
-      dockerfile: Dockerfile
+      #context: ./backend
+      context: .
+      dockerfile: backend/Dockerfile #changed - added backend/
     volumes:
       - ./backend:/app
+      - ./logging_config.py:/app/logging_config.py # added
     environment:
       DATABASE_URL: postgresql://user:password@postgres/rusty_bargain
     ports:
@@ -53,6 +55,7 @@ services:
       - postgres
     networks:
       - mynetwork
+    #command: ["tail", "-f", "/dev/null"] # added
 
   frontend:
     build: 

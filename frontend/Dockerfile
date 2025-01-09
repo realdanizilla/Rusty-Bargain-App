@@ -16,6 +16,9 @@ COPY backend /app/backend
 RUN pip install ./backend  # Executes setup.py automatically
 COPY frontend /app/frontend
 
+# Copy the .streamlit folder to the home directory
+COPY /frontend/.streamlit /app/frontend/.streamlit
+
 # Copiar o restante dos arquivos do projeto
 COPY . /app/frontend
 
