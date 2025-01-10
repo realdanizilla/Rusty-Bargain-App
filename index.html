@@ -356,17 +356,21 @@
 <h3 id="backend"><strong>Backend</strong>:</h3>
 <ul>
 <li>Built with <strong>FastAPI</strong>, the backend handles all API endpoints, machine learning workflows, and database interactions.</li>
-<li>Includes modules for:</li>
+<li>Includes modules for:<ul>
 <li>Data preprocessing.</li>
 <li>ML model training and predictions.</li>
-<li>Database operations via PostgreSQL.</li>
+<li>Database operations via PostgreSQL and PGAdmin.</li>
+</ul>
+</li>
 </ul>
 <h3 id="frontend"><strong>Frontend</strong>:</h3>
 <ul>
 <li>Built with <strong>Streamlit</strong>, the frontend provides an interactive interface for users to interact with the backend services.</li>
-<li>Features include:</li>
+<li>Features include:<ul>
 <li>Viewing and managing vehicle records.</li>
 <li>Initiating model training and predictions.</li>
+</ul>
+</li>
 </ul>
 <h3 id="application-flow"><strong>Application Flow</strong></h3>
 <h2 id="flowchart-lr-subgraph-etlrusty-bargain-app-abase-vehicle-dataset-bextract-extract_from_csv-bextract-extract_from_csv-ccreate-bronze-table-on-postgres-database-and-seed-it-with-350k-vehicle-records-ccreate-bronze-table-on-postgres-database-and-seed-it-with-350k-vehicle-records-dcrud-operations-create-read-update-delete-vehicles-from-database-dcrud-operations-create-read-update-delete-vehicles-from-database-etransformpreprocess-database-using-ml-pipeline-etransformpreprocess-database-using-ml-pipeline-fload-create-gold-table-on-postgres-database-fload-create-gold-table-on-postgres-database-trainre-train-ml-model-ggenerate-price-prediction-end"><pre class="mermaid"><code>flowchart LR
@@ -5086,15 +5090,6 @@ end</code></pre></h2>
 </code></pre></div></p>
 </li>
 <li>
-<p><strong>Set Up Environment Variables</strong>:
-   Create a <code>.env</code> file in the root directory with the following:
-   <div class="highlight"><pre><span></span><code>POSTGRES_USER=user
-POSTGRES_PASSWORD=password
-POSTGRES_DB=rusty_bargain
-LOGFIRE_TOKEN=your_token
-</code></pre></div></p>
-</li>
-<li>
 <p><strong>Build and Start Docker Containers</strong>:
    <div class="highlight"><pre><span></span><code>docker-compose<span class="w"> </span>up<span class="w"> </span>--build
 </code></pre></div></p>
@@ -5111,15 +5106,21 @@ LOGFIRE_TOKEN=your_token
 <p><strong>Backend</strong>:
    Access API documentation at <code>http://localhost:8000/docs</code>.</p>
 </li>
+<li>
+<p><strong>Database</strong>:
+   Access the database using pgadmin at <code>http://http://localhost:5050</code></p>
+</li>
 </ol>
 <hr />
 <h3 id="usage">Usage</h3>
 <h4 id="vehicle-database-management"><strong>Vehicle Database Management</strong></h4>
 <ul>
-<li>Use the Streamlit interface to:</li>
-<li>View all vehicle records.</li>
+<li>Use the Streamlit interface to:<ul>
+<li>View one or all vehicle records.</li>
 <li>Add new vehicles.</li>
 <li>Update or delete existing records.</li>
+</ul>
+</li>
 </ul>
 <h4 id="machine-learning-workflow"><strong>Machine Learning Workflow</strong></h4>
 <ul>
@@ -5132,14 +5133,14 @@ LOGFIRE_TOKEN=your_token
 <li>
 <p><strong>Train/Re-train Model</strong>:</p>
 <ul>
-<li>Accessible from the frontend under "Train/Re-train Model."</li>
+<li>Accessible from the frontend, tab "ML Model" under "Train/Re-train Model."</li>
 <li>Processes raw data, loads it into the database, trains the model, and makes it available for predictions.</li>
 </ul>
 </li>
 <li>
 <p><strong>Price Prediction</strong>:</p>
 <ul>
-<li>Accessible via a frontend form.</li>
+<li>Accessible via a frontend form, tab "ML Model" under "Predict Vehicle Price".</li>
 <li>Users provide features like vehicle type, mileage, and horsepower, and the app predicts the price.</li>
 </ul>
 </li>
@@ -5156,7 +5157,7 @@ LOGFIRE_TOKEN=your_token
 <li>
 <p><strong>Manage Vehicles</strong>:</p>
 <ul>
-<li>Add or update vehicle records in the database.</li>
+<li>Add or update vehicle records in the database via the frontend or</li>
 <li>Access the database using pgadmin4 @ http://localhost:5050. Set a new connection as follows:<ul>
 <li>host: <code>host.docker.internal</code></li>
 <li>port: <code>55432</code></li>
