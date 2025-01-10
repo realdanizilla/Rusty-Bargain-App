@@ -171,5 +171,4 @@ For more details, refer to the original inspiration and project structure at [Ru
 # Future Improvements and Enhancements
 
 1. Create tests using pytest
-2. Add more features to the Streamlit app - such as displaying the model's performance metrics and graphs
-3. Automate creation of the 'gold' table and ML model training once the application is started for the first time
+2. Implement a modern dark theme for streamlit
