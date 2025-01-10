@@ -685,7 +685,7 @@ end</code></pre></h2>
 <span class="sd">    Returns:</span>
 <span class="sd">        vehicles_data: A list of dictionaries with key-value pairs with information for all vehicles</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">vehicles</span> <span class="o">=</span> <span class="n">get_vehicles</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+    <span class="n">vehicles</span> <span class="o">=</span> <span class="n">get_vehicles</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">vehicles</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -1310,11 +1310,12 @@ end</code></pre></h2>
       </thead>
       <tbody>
           <tr class="doc-section-item">
-<td><code>message</code></td>            <td>
+<td><code>JSON</code></td>            <td>
+                  <code>dict</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>model trained success/fail</p>
+                <p>Contains MSE, feature importance, and a success message</p>
               </div>
             </td>
           </tr>
@@ -1331,15 +1332,31 @@ end</code></pre></h2>
 <span class="normal">164</span>
 <span class="normal">165</span>
 <span class="normal">166</span>
-<span class="normal">167</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/train_model/&quot;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">train_model_endpoint</span><span class="p">():</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/train_model/&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">train_model_endpoint</span><span class="p">()</span><span class="o">-&gt;</span><span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Trains the model and creates a pkl file</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        message: model trained success/fail</span>
+<span class="sd">        JSON: Contains MSE, feature importance, and a success message</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">train_model_and_create_file</span><span class="p">()</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;Message&#39;</span><span class="p">:</span> <span class="s1">&#39;Model trained&#39;</span><span class="p">}</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">mse</span><span class="p">,</span> <span class="n">importance_df</span> <span class="o">=</span> <span class="n">train_model_and_create_file</span><span class="p">()</span>
+        <span class="n">importance_dict</span> <span class="o">=</span> <span class="n">importance_df</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s1">&#39;records&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;mse&quot;</span><span class="p">:</span> <span class="n">mse</span><span class="p">,</span>
+            <span class="s2">&quot;feature_importance&quot;</span><span class="p">:</span> <span class="n">importance_dict</span><span class="p">,</span>
+            <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Model trained successfully&quot;</span>
+        <span class="p">}</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -1383,15 +1400,15 @@ end</code></pre></h2>
 
             <details class="quote">
               <summary>Source code in <code>backend\api\router.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/load_model/&quot;</span><span class="p">)</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/load_model/&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">load_model_endpoint</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads the model from the pkl file</span>
 
@@ -1475,18 +1492,18 @@ end</code></pre></h2>
 
             <details class="quote">
               <summary>Source code in <code>backend\api\router.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">190</span>
 <span class="normal">191</span>
 <span class="normal">192</span>
-<span class="normal">193</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@router</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/predict_price/&quot;</span><span class="p">)</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@router</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/predict_price/&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">predict_price_endpoint</span><span class="p">(</span><span class="n">data</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">InputData</span><span class="p">])</span><span class="o">-&gt;</span><span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Predicts the price of a vehicle</span>
 
@@ -1590,9 +1607,7 @@ end</code></pre></h2>
 
             <details class="quote">
               <summary>Source code in <code>backend\crud\controller.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">13</span>
 <span class="normal">14</span>
 <span class="normal">15</span>
 <span class="normal">16</span>
@@ -1604,7 +1619,16 @@ end</code></pre></h2>
 <span class="normal">22</span>
 <span class="normal">23</span>
 <span class="normal">24</span>
-<span class="normal">25</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_vehicle</span><span class="p">(</span><span class="n">db</span><span class="p">:</span> <span class="n">Session</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">:</span> <span class="n">VehicleCreate</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">dict</span><span class="p">:</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_vehicle</span><span class="p">(</span><span class="n">db</span><span class="p">:</span> <span class="n">Session</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">:</span> <span class="n">VehicleCreate</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a new vehicle on the database</span>
 
 <span class="sd">    Args:</span>
@@ -1614,11 +1638,18 @@ end</code></pre></h2>
 <span class="sd">    Returns:</span>
 <span class="sd">        new_vehicle_data: Created Vehicle information</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">db_vehicle</span> <span class="o">=</span> <span class="n">VehicleModel</span><span class="p">(</span><span class="o">**</span><span class="n">vehicle</span><span class="o">.</span><span class="n">model_dump</span><span class="p">())</span>
-    <span class="n">db</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">db_vehicle</span><span class="p">)</span>
-    <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-    <span class="n">db</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="n">db_vehicle</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">db_vehicle</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Creating entry: </span><span class="si">{</span><span class="n">vehicle</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">db_vehicle</span> <span class="o">=</span> <span class="n">VehicleModel</span><span class="p">(</span><span class="o">**</span><span class="n">vehicle</span><span class="o">.</span><span class="n">model_dump</span><span class="p">())</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">db_vehicle</span><span class="p">)</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="n">db_vehicle</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Entry created successfully&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">db_vehicle</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error creating entry: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -1710,17 +1741,25 @@ end</code></pre></h2>
 
             <details class="quote">
               <summary>Source code in <code>backend\crud\controller.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_vehicle</span><span class="p">(</span><span class="n">db</span><span class="p">:</span> <span class="n">Session</span><span class="p">,</span> <span class="n">vehicle_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">dict</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_vehicle</span><span class="p">(</span><span class="n">db</span><span class="p">:</span> <span class="n">Session</span><span class="p">,</span> <span class="n">vehicle_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Reads a vehicle from the database</span>
 
 <span class="sd">    Args:</span>
@@ -1730,7 +1769,15 @@ end</code></pre></h2>
 <span class="sd">    Returns:</span>
 <span class="sd">        vehicle_data: Information for selected vehicle with the given id</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">VehicleModel</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">VehicleModel</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">vehicle_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reading entry with ID: </span><span class="si">{</span><span class="n">vehicle_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">VehicleModel</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">VehicleModel</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">vehicle_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Entry read successfully&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">query</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error reading entry: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -1803,11 +1850,11 @@ end</code></pre></h2>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>limits number of vehicles per page. Defaults to 100.</p>
+                <p>limits number of vehicles per page. Defaults to None.</p>
               </div>
             </td>
             <td>
-                  <code>100</code>
+                  <code>None</code>
             </td>
           </tr>
       </tbody>
@@ -1838,29 +1885,47 @@ end</code></pre></h2>
 
             <details class="quote">
               <summary>Source code in <code>backend\crud\controller.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_vehicles</span><span class="p">(</span><span class="n">db</span><span class="p">:</span> <span class="n">Session</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">Any</span><span class="p">]]:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_vehicles</span><span class="p">(</span><span class="n">db</span><span class="p">:</span> <span class="n">Session</span><span class="p">,</span> <span class="n">skip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">Any</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Reads all vehicles on the database</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        db (Session): Database connection session</span>
 <span class="sd">        skip (int, optional): Pagination setup parameter. Defaults to 0.</span>
-<span class="sd">        limit (int, optional): limits number of vehicles per page. Defaults to 100.</span>
+<span class="sd">        limit (int, optional): limits number of vehicles per page. Defaults to None.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        vehicles_data: the full list of dictionaries with vehicles from the database</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">VehicleModel</span><span class="p">)</span><span class="o">.</span><span class="n">offset</span><span class="p">(</span><span class="n">skip</span><span class="p">)</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reading all entries&quot;</span><span class="p">)</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">VehicleModel</span><span class="p">)</span><span class="o">.</span><span class="n">offset</span><span class="p">(</span><span class="n">skip</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Entries read successfully&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">query</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error reading entries: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -1968,34 +2033,7 @@ end</code></pre></h2>
 
             <details class="quote">
               <summary>Source code in <code>backend\crud\controller.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 59</span>
-<span class="normal"> 60</span>
-<span class="normal"> 61</span>
-<span class="normal"> 62</span>
-<span class="normal"> 63</span>
-<span class="normal"> 64</span>
-<span class="normal"> 65</span>
-<span class="normal"> 66</span>
-<span class="normal"> 67</span>
-<span class="normal"> 68</span>
-<span class="normal"> 69</span>
-<span class="normal"> 70</span>
-<span class="normal"> 71</span>
-<span class="normal"> 72</span>
-<span class="normal"> 73</span>
-<span class="normal"> 74</span>
-<span class="normal"> 75</span>
-<span class="normal"> 76</span>
-<span class="normal"> 77</span>
-<span class="normal"> 78</span>
-<span class="normal"> 79</span>
-<span class="normal"> 80</span>
-<span class="normal"> 81</span>
-<span class="normal"> 82</span>
-<span class="normal"> 83</span>
-<span class="normal"> 84</span>
-<span class="normal"> 85</span>
-<span class="normal"> 86</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 86</span>
 <span class="normal"> 87</span>
 <span class="normal"> 88</span>
 <span class="normal"> 89</span>
@@ -2016,7 +2054,40 @@ end</code></pre></h2>
 <span class="normal">104</span>
 <span class="normal">105</span>
 <span class="normal">106</span>
-<span class="normal">107</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">update_vehicle</span><span class="p">(</span><span class="n">db</span><span class="p">:</span> <span class="n">Session</span><span class="p">,</span> <span class="n">vehicle_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">:</span> <span class="n">VehicleUpdate</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">dict</span><span class="p">:</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">update_vehicle</span><span class="p">(</span><span class="n">db</span><span class="p">:</span> <span class="n">Session</span><span class="p">,</span> <span class="n">vehicle_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">:</span> <span class="n">VehicleUpdate</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Updates information of a vehicle in the database</span>
 
 <span class="sd">    Args:</span>
@@ -2027,44 +2098,50 @@ end</code></pre></h2>
 <span class="sd">    Returns:</span>
 <span class="sd">        updated_vehicle_data: Updated vehicle information</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">db_vehicle</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">VehicleModel</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">VehicleModel</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">vehicle_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updating entry with ID: </span><span class="si">{</span><span class="n">vehicle_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">db_vehicle</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">VehicleModel</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">VehicleModel</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">vehicle_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
 
-    <span class="k">if</span> <span class="n">db_vehicle</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span>   
-    <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">datecrawled</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">db_vehicle</span><span class="o">.</span><span class="n">datecrawled</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">datecrawled</span>
-    <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">price</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">db_vehicle</span><span class="o">.</span><span class="n">price</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">price</span>
-    <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">vehicletype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">db_vehicle</span><span class="o">.</span><span class="n">vehicletype</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">vehicletype</span> 
-    <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">gearbox</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">db_vehicle</span><span class="o">.</span><span class="n">gearbox</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">gearbox</span>
-    <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">power</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">db_vehicle</span><span class="o">.</span><span class="n">power</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">power</span>
-    <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">db_vehicle</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">model</span>
-    <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">mileage</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">db_vehicle</span><span class="o">.</span><span class="n">mileage</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">mileage</span>
-    <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">registrationmonth</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">db_vehicle</span><span class="o">.</span><span class="n">registrationmonth</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">registrationmonth</span>
-    <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">registrationyear</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">db_vehicle</span><span class="o">.</span><span class="n">registrationyear</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">registrationyear</span>
-    <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">fueltype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">db_vehicle</span><span class="o">.</span><span class="n">fueltype</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">fueltype</span>
-    <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">brand</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">db_vehicle</span><span class="o">.</span><span class="n">brand</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">brand</span>
-    <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">repaired</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">db_vehicle</span><span class="o">.</span><span class="n">repaired</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">repaired</span>
-    <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">datecreated</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">db_vehicle</span><span class="o">.</span><span class="n">datecreated</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">datecreated</span>
-    <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">numberofpictures</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">db_vehicle</span><span class="o">.</span><span class="n">numberofpictures</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">numberofpictures</span>
-    <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">postalcode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">db_vehicle</span><span class="o">.</span><span class="n">postalcode</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">postalcode</span>
-    <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">lastseen</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">db_vehicle</span><span class="o">.</span><span class="n">lastseen</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">lastseen</span>   
-    <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">db_vehicle</span>
+        <span class="k">if</span> <span class="n">db_vehicle</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>   
+        <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">datecrawled</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">db_vehicle</span><span class="o">.</span><span class="n">datecrawled</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">datecrawled</span>
+        <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">price</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">db_vehicle</span><span class="o">.</span><span class="n">price</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">price</span>
+        <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">vehicletype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">db_vehicle</span><span class="o">.</span><span class="n">vehicletype</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">vehicletype</span> 
+        <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">gearbox</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">db_vehicle</span><span class="o">.</span><span class="n">gearbox</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">gearbox</span>
+        <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">power</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">db_vehicle</span><span class="o">.</span><span class="n">power</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">power</span>
+        <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">db_vehicle</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">model</span>
+        <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">mileage</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">db_vehicle</span><span class="o">.</span><span class="n">mileage</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">mileage</span>
+        <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">registrationmonth</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">db_vehicle</span><span class="o">.</span><span class="n">registrationmonth</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">registrationmonth</span>
+        <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">registrationyear</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">db_vehicle</span><span class="o">.</span><span class="n">registrationyear</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">registrationyear</span>
+        <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">fueltype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">db_vehicle</span><span class="o">.</span><span class="n">fueltype</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">fueltype</span>
+        <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">brand</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">db_vehicle</span><span class="o">.</span><span class="n">brand</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">brand</span>
+        <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">repaired</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">db_vehicle</span><span class="o">.</span><span class="n">repaired</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">repaired</span>
+        <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">datecreated</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">db_vehicle</span><span class="o">.</span><span class="n">datecreated</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">datecreated</span>
+        <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">numberofpictures</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">db_vehicle</span><span class="o">.</span><span class="n">numberofpictures</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">numberofpictures</span>
+        <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">postalcode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">db_vehicle</span><span class="o">.</span><span class="n">postalcode</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">postalcode</span>
+        <span class="k">if</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">lastseen</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">db_vehicle</span><span class="o">.</span><span class="n">lastseen</span> <span class="o">=</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">lastseen</span>   
+        <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Entry updated successfully&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">db_vehicle</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error updating entry: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2156,20 +2233,26 @@ end</code></pre></h2>
 
             <details class="quote">
               <summary>Source code in <code>backend\crud\controller.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">delete_vehicle</span><span class="p">(</span><span class="n">db</span><span class="p">:</span> <span class="n">Session</span><span class="p">,</span> <span class="n">vehicle_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">dict</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">delete_vehicle</span><span class="p">(</span><span class="n">db</span><span class="p">:</span> <span class="n">Session</span><span class="p">,</span> <span class="n">vehicle_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Removes a vehicle from the database</span>
 
 <span class="sd">    Args:</span>
@@ -2179,10 +2262,16 @@ end</code></pre></h2>
 <span class="sd">    Returns:</span>
 <span class="sd">        delete_vehicle_data: Information for the Deleted vehicle</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">db_vehicle</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">VehicleModel</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">VehicleModel</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">vehicle_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
-    <span class="n">db</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">db_vehicle</span><span class="p">)</span>
-    <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">db_vehicle</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleting entry with ID: </span><span class="si">{</span><span class="n">vehicle_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">db_vehicle</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">VehicleModel</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">VehicleModel</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">vehicle_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">db_vehicle</span><span class="p">)</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Entry deleted successfully&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">db_vehicle</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error deleting entry: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4455,7 +4544,8 @@ end</code></pre></h2>
 <span class="normal">55</span>
 <span class="normal">56</span>
 <span class="normal">57</span>
-<span class="normal">58</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">preprocess_data</span><span class="p">()</span><span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="normal">58</span>
+<span class="normal">59</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">preprocess_data</span><span class="p">()</span><span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Preprocesses the raw data from bronze_car_data table using the pipeline_dataset</span>
 
 <span class="sd">    Raises:</span>
@@ -4465,6 +4555,7 @@ end</code></pre></h2>
 <span class="sd">        car_dataset: Preprocessed dataset</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Preprocessing raw data&quot;</span><span class="p">)</span>
         <span class="n">query</span> <span class="o">=</span> <span class="s1">&#39;SELECT * FROM bronze_car_data&#39;</span>
         <span class="n">data_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="n">query</span><span class="p">,</span><span class="n">engine</span><span class="p">)</span>
         <span class="n">processed_df</span> <span class="o">=</span> <span class="n">pipeline_dataset</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">data_df</span><span class="p">)</span>
@@ -4548,8 +4639,7 @@ end</code></pre></h2>
 
             <details class="quote">
               <summary>Source code in <code>backend\ELT.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">62</span>
-<span class="normal">63</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">63</span>
 <span class="normal">64</span>
 <span class="normal">65</span>
 <span class="normal">66</span>
@@ -4562,7 +4652,9 @@ end</code></pre></h2>
 <span class="normal">73</span>
 <span class="normal">74</span>
 <span class="normal">75</span>
-<span class="normal">76</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_preprocessed_vehicle_dataset_into_database</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span><span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_preprocessed_vehicle_dataset_into_database</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span><span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads the preprocessed data into the gold_car_data table in the database</span>
 
 <span class="sd">    Args:</span>
@@ -4572,6 +4664,7 @@ end</code></pre></h2>
 <span class="sd">        HTTPException: Preprocessed data could not be loaded into the database</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading preprocessed data into gold_car_data table&quot;</span><span class="p">)</span>
         <span class="n">df</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="s1">&#39;gold_car_data&#39;</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="n">engine</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">&#39;replace&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Preprocessed data loaded into gold_car_data table!&quot;</span><span class="p">)</span>
     <span class="k">except</span><span class="p">:</span>
@@ -4621,9 +4714,7 @@ end</code></pre></h2>
 
             <details class="quote">
               <summary>Source code in <code>backend\ELT.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 80</span>
-<span class="normal"> 81</span>
-<span class="normal"> 82</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 82</span>
 <span class="normal"> 83</span>
 <span class="normal"> 84</span>
 <span class="normal"> 85</span>
@@ -4642,13 +4733,24 @@ end</code></pre></h2>
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
 <span class="normal">100</span>
-<span class="normal">101</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">train_model_and_create_file</span><span class="p">()</span><span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">train_model_and_create_file</span><span class="p">()</span><span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Trains the model using the gold_car_data table and creates a model.pkl file</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        HTTPException: Model could not be trained</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Training model and creating model.pkl file&quot;</span><span class="p">)</span>
         <span class="n">training_query</span> <span class="o">=</span> <span class="s1">&#39;SELECT * FROM gold_car_data&#39;</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="n">training_query</span><span class="p">,</span><span class="n">engine</span><span class="p">)</span>
         <span class="n">X</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;price&quot;</span><span class="p">])</span>
@@ -4659,8 +4761,15 @@ end</code></pre></h2>
         <span class="n">prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
         <span class="n">mse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">prediction</span><span class="p">))</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;model MSE: </span><span class="si">{</span><span class="n">mse</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">feature_importance</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_feature_importance</span><span class="p">()</span>
+        <span class="n">feature_names</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">columns</span>
+        <span class="n">importance_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+            <span class="s2">&quot;feature&quot;</span><span class="p">:</span> <span class="n">feature_names</span><span class="p">,</span>
+            <span class="s2">&quot;importance&quot;</span><span class="p">:</span> <span class="n">feature_importance</span>
+        <span class="p">})</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">&quot;importance&quot;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;model.pkl&quot;</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Model trained and model.pkl file created!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mse</span><span class="p">,</span> <span class="n">importance_df</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Model could not be trained, error: </span><span class="si">{e}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
@@ -4708,25 +4817,27 @@ end</code></pre></h2>
 
             <details class="quote">
               <summary>Source code in <code>backend\ELT.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">116</span>
 <span class="normal">117</span>
-<span class="normal">118</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_model</span><span class="p">():</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_model</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads the model from the model.pkl file</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        HTTPException: Model could not be loaded</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading model from model.pkl file&quot;</span><span class="p">)</span>
         <span class="k">global</span> <span class="n">model</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">joblib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;model.pkl&quot;</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Model loaded from model.pkl file!&quot;</span><span class="p">)</span>
@@ -4841,18 +4952,7 @@ end</code></pre></h2>
 
             <details class="quote">
               <summary>Source code in <code>backend\ELT.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">133</span>
 <span class="normal">134</span>
 <span class="normal">135</span>
 <span class="normal">136</span>
@@ -4900,7 +5000,19 @@ end</code></pre></h2>
 <span class="normal">178</span>
 <span class="normal">179</span>
 <span class="normal">180</span>
-<span class="normal">181</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">predict_price</span><span class="p">(</span><span class="n">data</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">InputData</span><span class="p">])</span><span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">]:</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">predict_price</span><span class="p">(</span><span class="n">data</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">InputData</span><span class="p">])</span><span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates a prediction for the price of a vehicle using the model</span>
 
 <span class="sd">    Args:</span>
@@ -4941,6 +5053,7 @@ end</code></pre></h2>
         <span class="s2">&quot;postalcode&quot;</span><span class="p">,</span> <span class="s2">&quot;lastseen&quot;</span>
     <span class="p">]</span>
     <span class="k">try</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Generating prediction for price&quot;</span><span class="p">)</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
         <span class="c1">#datetime_columns = [&quot;datecrawled&quot;, &quot;datecreated&quot;, &quot;lastseen&quot;]</span>
         <span class="c1">#for col in datetime_columns:</span>
