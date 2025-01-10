@@ -1,8 +1,4 @@
 
-
-# button 1 - Preprocess data  -> hits the backend endpoint - calls the pre-processing pipeline
-# button 2 - train model -> hits the backend endpoint - calls the training pipeline
-
 import streamlit as st
 import requests
 import pandas as pd
@@ -18,7 +14,7 @@ gearbox_types = [gearbox.value for gearbox in GearboxBase]
 
 st.set_page_config(layout="wide")
 
-#st.image("/frontend/logo2.jpg", width=200)
+st.image("frontend/logo2.jpg", width=600)
 
 st.title("Rusty Bargain - The best car bang for your buck!")
 
@@ -101,9 +97,6 @@ with tabs[0]:
 
     # View vehicles
     with st.expander("View Vehicles"):
-        # Use session state to store the DataFrame
-        #if "vehicle_data" not in st.session_state:
-        #    st.session_state.vehicle_data = None
 
         if st.button("Show all Vehicles"):
             response = requests.get("http://backend:8000/vehicles/")
@@ -132,14 +125,8 @@ with tabs[0]:
                     ]
                 ]
 
-                # Store the data in session state
-                #st.session_state.vehicle_data = df
             else:
                 show_response_message(response)
-
-        # Check if data is available in session state
-        #if st.session_state.vehicle_data is not None:
-        #    df = st.session_state.vehicle_data
 
             # Configure the AgGrid table
             gb = GridOptionsBuilder.from_dataframe(df)
@@ -203,8 +190,7 @@ with tabs[0]:
                     fit_columns_on_grid_load=True,
                     enable_enterprise_modules=False
                 )
-                # Show DataFrame without index
-                #st.write(df.to_html(index=False), unsafe_allow_html=True)
+
             else:
                 show_response_message(response)
 
@@ -366,12 +352,14 @@ with tabs[1]:
                     # request 1 - preprocess raw data
                     response = requests.get("http://backend:8000/preprocessdata")
                     if response.status_code == 200:
-                        st.success("Model Data Preprocessing sucessful!")
+                        data = response.json()
+                        st.success(f"Status: {data['Message']}")
                         
                         # request 2 - load preprocessed data into gold table
                         response = requests.get("http://backend:8000/load_preprocessed_dataset")
                         if response.status_code == 200:
-                            st.success("Model Data Loaded!")
+                            data = response.json()
+                            st.success(f"Status: {data['Message']}")
 
                             # request 3 - train the model
                             response = requests.get("http://backend:8000/train_model")
@@ -379,20 +367,21 @@ with tabs[1]:
                                 # model performance stuff
                                 data = response.json()
                                 #display MSE
-                                st.subheader("Mean Performance")
-                                st.write(f"Mean Squared Error (MSE): {data["MSE"]}")
+                                st.subheader("Model Performance")
+                                st.write(f"Mean Squared Error (MSE): {data['mse']:.2f}")
 
                                 #display feature importance
                                 st.subheader("Feature Importance")
-                                importance_df = pd.DataFrame(data["Feature Importance"])
+                                importance_df = pd.DataFrame(data['feature_importance'])
                                 st.write(importance_df)
-                                st.bar_chart(importance_df.set_index("Feature"))
-                                st.success(data["Message"])
+                                st.bar_chart(importance_df.set_index('feature').sort_values(by='importance', ascending=False))
+                                st.success(data['message'])
 
                                 # request 4 - load the model
                                 response = requests.get("http://backend:8000/load_model")
                                 if response.status_code == 200:
-                                    st.success("Model Loaded!")
+                                    data = response.json()
+                                    st.success(f"Status: {data['Message']}")
                                 else:
                                     st.error(f"Failed to load the model. Error: {response.text}")        
                             else:

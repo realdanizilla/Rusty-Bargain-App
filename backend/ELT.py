@@ -23,15 +23,6 @@ from preprocessing import pipeline_dataset, pipeline_single
 from typing import List, Dict
 from fastapi import HTTPException
 from logging_config import setup_logging
-# ------------------------------------------------------
-# Logfire setup
-# logfire.configure()
-# basicConfig(handlers=[logfire.LogfireLoggingHandler()])
-# logger = getLogger(__name__)
-# logger.setLevel(logging.INFO)
-# logfire.instrument_requests()
-# logfire.instrument_sqlalchemy()
-# ------------------------------------------------------
 
 # Functions below are used to start from raw data and end with a trained model file
 ## loads the initial dataset into a dataframe and preprocess it
@@ -173,10 +164,6 @@ def predict_price(data:List[InputData])-> Dict[str, List]:
     try:
         logger.info("Generating prediction for price")
         df = pd.DataFrame(input_data, columns=columns)
-        #datetime_columns = ["datecrawled", "datecreated", "lastseen"]
-        #for col in datetime_columns:
-        #    if col in df.columns:
-        #        df[col] = df[col].astype(str).replace("NaT", None) 
         processed_single_df = pipeline_single.fit_transform(df)
         logger.info("Submitted data ran through preprocessing pipeline")
         expected_feature_order = model.feature_names_

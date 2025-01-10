@@ -25,7 +25,7 @@ with open(csv_file, 'r', newline='', encoding='utf-8') as csvfile, open(sql_file
             elif col in datetime_columns:
                 # Parse and reformat datetime columns
                 try:
-                    parsed_date = datetime.strptime(value, '%d/%m/%Y %H:%M')  # Adjust based on your CSV format
+                    parsed_date = datetime.strptime(value, '%d/%m/%Y %H:%M')  
                     formatted_date = parsed_date.strftime('%Y-%m-%d %H:%M:%S')  # Format for PostgreSQL
                     values.append(f"'{formatted_date}'")
                 except ValueError:

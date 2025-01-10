@@ -1,7 +1,7 @@
 # This file is used to preprocess raw vehicle data from postgres database into a 
 # format that can be used for training a machine learning model. 
 # The functions in this file are used to preprocess the data 
-# data pipeline can be saved (currently inactivated)
+# Data pipeline can be saved (currently inactivated)
 
 import pandas as pd
 import numpy as np
@@ -10,7 +10,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import MaxAbsScaler
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
-#from database.database import engine
+
 
 
 # Pipeline functions
@@ -173,11 +173,6 @@ pipeline_single = Pipeline(steps=[('custom_transformer', CustomTransformerSingle
 #loaded_pipeline = joblib.load('preprocessing_pipeline.pkl')
 
 if __name__ == "__main__":
-    # query = 'SELECT * FROM car_data'
-    # data_df = pd.read_sql(query,engine)
-    #data = pd.read_csv('../data/car_data.csv')
-    # processed_df = pipeline_dataset.fit_transform(data_df)
-    # processed_df.to_csv('../data/processed_data.csv', index=False)
     
     # sample data for testing
     data_single = {

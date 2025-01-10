@@ -54,15 +54,15 @@ The Rusty Bargain App is divided into two main components:
 ### **Backend**:
 - Built with **FastAPI**, the backend handles all API endpoints, machine learning workflows, and database interactions.
 - Includes modules for:
-  - Data preprocessing.
-  - ML model training and predictions.
-  - Database operations via PostgreSQL.
+    - Data preprocessing.
+    - ML model training and predictions.
+    - Database operations via PostgreSQL and PGAdmin.
 
 ### **Frontend**:
 - Built with **Streamlit**, the frontend provides an interactive interface for users to interact with the backend services.
 - Features include:
-  - Viewing and managing vehicle records.
-  - Initiating model training and predictions.
+    - Viewing and managing vehicle records.
+    - Initiating model training and predictions.
 
 ### **Application Flow**
 
@@ -228,16 +228,7 @@ end
    cd Rusty-Bargain-App
    ```
 
-2. **Set Up Environment Variables**:
-   Create a `.env` file in the root directory with the following:
-   ```
-   POSTGRES_USER=user
-   POSTGRES_PASSWORD=password
-   POSTGRES_DB=rusty_bargain
-   LOGFIRE_TOKEN=your_token
-   ```
-
-3. **Build and Start Docker Containers**:
+2. **Build and Start Docker Containers**:
    ```bash
    docker-compose up --build
    ```
@@ -252,15 +243,18 @@ end
 2. **Backend**:
    Access API documentation at `http://localhost:8000/docs`.
 
+3. **Database**:
+   Access the database using pgadmin at `http://http://localhost:5050`
+
 ---
 
 ### Usage
 
 #### **Vehicle Database Management**
 - Use the Streamlit interface to:
-  - View all vehicle records.
-  - Add new vehicles.
-  - Update or delete existing records.
+    - View one or all vehicle records.
+    - Add new vehicles.
+    - Update or delete existing records.
 
 #### **Machine Learning Workflow**
 - Train or retrain the model using updated data.
@@ -271,11 +265,11 @@ end
 ## Key Functionalities
 
 1. **Train/Re-train Model**:
-      - Accessible from the frontend under "Train/Re-train Model."
+      - Accessible from the frontend, tab "ML Model" under "Train/Re-train Model."
       - Processes raw data, loads it into the database, trains the model, and makes it available for predictions.
 
 2. **Price Prediction**:
-      - Accessible via a frontend form.
+      - Accessible via a frontend form, tab "ML Model" under "Predict Vehicle Price".
       - Users provide features like vehicle type, mileage, and horsepower, and the app predicts the price.
 
 ---
@@ -286,7 +280,7 @@ end
       - Run `docker-compose up` and access the frontend and backend services.
 
 2. **Manage Vehicles**:
-      - Add or update vehicle records in the database.
+      - Add or update vehicle records in the database via the frontend or
       - Access the database using pgadmin4 @ http://localhost:5050. Set a new connection as follows:
           - host: `host.docker.internal`
           - port: `55432`

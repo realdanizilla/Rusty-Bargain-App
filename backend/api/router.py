@@ -157,7 +157,7 @@ def load_preprocessed_data_endpoint():
 
 ## Train the model
 @router.get("/train_model/")
-def train_model_endpoint():
+def train_model_endpoint()->dict:
     """Trains the model and creates a pkl file
 
     Returns:
@@ -167,9 +167,9 @@ def train_model_endpoint():
         mse, importance_df = train_model_and_create_file()
         importance_dict = importance_df.to_dict(orient='records')
         return {
-            'MSE': mse,
-            'Feature Importance': importance_dict,
-            'Message': 'Model trained'
+            "mse": mse,
+            "feature_importance": importance_dict,
+            "message": "Model trained successfully"
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

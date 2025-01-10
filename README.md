@@ -59,6 +59,7 @@ The database consists of 2 tables:
 2. Perform CRUD operations to manage vehicle data (create, read, update, delete).
 3. Use the ML module to predict vehicle prices based on input features.
 4. Re-train the ML model with updated database records as needed.
+5. Check logs on pydantic's logfire
 
 ---
 
@@ -102,7 +103,7 @@ The database consists of 2 tables:
 ## What I Have Learned from This Project
 
 1. **Full-Stack Development**:
-   - Integration of frontend (Streamlit) and backend (FastAPI) with a database.
+   - Integration of frontend (Streamlit) and backend (FastAPI) with a database (PostgreSQL).
 
 2. **Machine Learning Lifecycle**:
    - From model construction on jupyter notebook to deployment with real-time predictions and re-training the model.
@@ -111,7 +112,7 @@ The database consists of 2 tables:
 3. **Database Management**:
    - Efficient handling of relational data using PostgreSQL and SQLAlchemy.
    - MVC database model (model, viewer, controller)
-   - Data validation with Pydantic
+   - Data validation with Pydantic schemas
    - Splitting raw data on a 'bronze' table and preprocessed data ready to be consumed by the ML model on a 'gold' table
 
 4. **Containerization**:
@@ -138,6 +139,7 @@ Use Docker Compose to start the frontend, backend, database and pgadmin (databas
 ```bash
 docker-compose up --build
 ```
+Once application is running, monitor activity on logfire. Database will be populated automatically with raw data.
 
 ### 4. **Access the Application**
 - **Frontend**: Visit `http://localhost:8501` for the Streamlit app.
@@ -148,12 +150,9 @@ docker-compose up --build
   - Add a new server connection:
     - **Host**: `host.docker.internal`
     - **Port**: `55432`
-    - **Username**: (as defined in `docker-compose.yml`)
-    - **Password**: (as defined in `docker-compose.yml`)
+    - **Username**: `ùser`
+    - **Password**: `password`
     - **Database**: `rusty_bargain` (or the database name you are using).
-    - once logged in, run the file data/raw_data_loader.py to generate raw_car_data.sql
-    - run raw_car_data.sql to populate the database
-
 
 ### 5. **Perform CRUD Operations**
 - Use the Streamlit interface to manage the vehicle database.

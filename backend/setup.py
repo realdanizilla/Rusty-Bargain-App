@@ -4,5 +4,5 @@ setup(
     name="backend",
     version="1.0",
     packages=find_packages(),
-    install_requires=[],  # Add any dependencies here if needed
+    install_requires=[],  
 )
